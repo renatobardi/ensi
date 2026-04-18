@@ -41,7 +41,9 @@
         "name": "ensi-events",
         "responsibility": "NATS JetStream embedded adapter. Implements EventPublisher trait. Defines subject hierarchy.",
         "ports": [],
-        "adapters": ["EventPublisher"]
+        "adapters": [
+          "EventPublisher"
+        ]
       },
       {
         "name": "ensi-pipeline",
@@ -59,7 +61,9 @@
         "name": "ensi-daemon",
         "responsibility": "Task poller/subscriber. Execenv lifecycle (~/ensi_workspaces/{ws_id}/{task_id}/). Hosts AgentExecutor impl (Gemini API calls, schema preprocessing, retry loop).",
         "ports": [],
-        "adapters": ["AgentExecutor"]
+        "adapters": [
+          "AgentExecutor"
+        ]
       },
       {
         "name": "ensi-frontend",
@@ -103,7 +107,7 @@
         "from": "Planning",
         "to": "Architecture",
         "event": "artifact_validated",
-        "guard": "PrdArtifact schema-valid and stored"
+        "guard": "PrdCoreArtifact AND PrdStoriesArtifact both schema-valid; merged PrdArtifact stored"
       },
       {
         "from": "Architecture",
@@ -212,7 +216,27 @@
       "p50_ms": 1800,
       "p95_ms": 4200,
       "nfr_limit_ms": 300000,
-      "note": "p95 4200ms × 5 stages × up to 3 retries = ~63s worst case, well within 20min NFR"
+      "note": "p95 4200ms \u00d7 5 stages \u00d7 up to 3 retries = ~63s worst case, well within 20min NFR"
+    },
+    "planning_stage_override": {
+      "note": "OI-003 \u2014 Planning stage requires two sequential structured-output calls instead of one",
+      "call_sequence": [
+        {
+          "step": 1,
+          "schema": "PrdCoreArtifact",
+          "target_max_output_tokens": 1200,
+          "fields": "problem_statement, goals, non_goals, constraints, success_metrics, target_audience, timeline_weeks"
+        },
+        {
+          "step": 2,
+          "schema": "PrdStoriesArtifact",
+          "target_max_output_tokens": 1200,
+          "fields": "epics, user_stories (with acceptance_criteria)",
+          "context_from_step_1": true
+        }
+      ],
+      "merge_into": "PrdArtifact",
+      "validation": "Validate each sub-call individually; merge; validate merged PrdArtifact before advancing FSM"
     }
   },
   "database_schema": {
@@ -221,141 +245,231 @@
     "tables": [
       {
         "name": "workspace",
-        "fields": ["id", "name: string", "slug: string", "created_at: datetime"],
-        "indexes": ["UNIQUE idx_workspace_slug ON (slug)"],
+        "fields": [
+          "id",
+          "name: string",
+          "slug: string",
+          "created_at: datetime"
+        ],
+        "indexes": [
+          "UNIQUE idx_workspace_slug ON (slug)"
+        ],
         "relations": []
       },
       {
         "name": "member",
         "fields": [
-          "id", "workspace_id: record<workspace>", "email: string",
-          "name: string", "role: string (owner|admin|member)",
-          "password_hash: string", "created_at: datetime"
+          "id",
+          "workspace_id: record<workspace>",
+          "email: string",
+          "name: string",
+          "role: string (owner|admin|member)",
+          "password_hash: string",
+          "created_at: datetime"
         ],
-        "indexes": ["UNIQUE idx_member_email ON (email)"],
-        "relations": ["->workspace"]
+        "indexes": [
+          "UNIQUE idx_member_email ON (email)"
+        ],
+        "relations": [
+          "->workspace"
+        ]
       },
       {
         "name": "agent",
         "fields": [
-          "id", "workspace_id: record<workspace>", "name: string",
-          "slug: string", "persona: string", "system_prompt: string",
+          "id",
+          "workspace_id: record<workspace>",
+          "name: string",
+          "slug: string",
+          "persona: string",
+          "system_prompt: string",
           "created_at: datetime"
         ],
-        "indexes": ["UNIQUE idx_agent_ws_slug ON (workspace_id, slug)"],
-        "relations": ["->workspace"]
+        "indexes": [
+          "UNIQUE idx_agent_ws_slug ON (workspace_id, slug)"
+        ],
+        "relations": [
+          "->workspace"
+        ]
       },
       {
         "name": "project",
         "fields": [
-          "id", "workspace_id: record<workspace>", "name: string",
-          "slug: string", "issue_counter: int DEFAULT 0",
+          "id",
+          "workspace_id: record<workspace>",
+          "name: string",
+          "slug: string",
+          "issue_counter: int DEFAULT 0",
           "created_at: datetime"
         ],
-        "indexes": ["UNIQUE idx_project_ws_slug ON (workspace_id, slug)"],
-        "relations": ["->workspace"]
+        "indexes": [
+          "UNIQUE idx_project_ws_slug ON (workspace_id, slug)"
+        ],
+        "relations": [
+          "->workspace"
+        ]
       },
       {
         "name": "issue",
         "fields": [
-          "id", "project_id: record<project>", "workspace_id: record<workspace>",
-          "number: int", "title: string", "description: option<string>",
+          "id",
+          "project_id: record<project>",
+          "workspace_id: record<workspace>",
+          "number: int",
+          "title: string",
+          "description: option<string>",
           "status: string (todo|in_progress|in_review|done|blocked)",
           "priority: string (urgent|high|medium|low)",
           "parent_id: option<record<issue>>",
-          "assignee_id: option<string>", "assignee_type: option<string>",
-          "created_at: datetime", "updated_at: datetime"
+          "assignee_id: option<string>",
+          "assignee_type: option<string>",
+          "created_at: datetime",
+          "updated_at: datetime"
         ],
         "indexes": [
           "idx_issue_project ON (project_id)",
           "UNIQUE idx_issue_number ON (project_id, number)",
           "idx_issue_ws_status ON (workspace_id, status)"
         ],
-        "relations": ["->project", "->workspace", "->issue (parent)"]
+        "relations": [
+          "->project",
+          "->workspace",
+          "->issue (parent)"
+        ]
       },
       {
         "name": "pipeline_state",
         "fields": [
-          "id", "issue_id: record<issue>",
+          "id",
+          "issue_id: record<issue>",
           "stage: string (Discovery|Planning|Architecture|Development|Review|Blocked|Complete)",
           "stage_status: string (pending|running|done|failed)",
           "blocked_from_stage: option<string>",
           "current_task_id: option<record<task>>",
           "retry_count: int DEFAULT 0",
-          "created_at: datetime", "updated_at: datetime"
+          "created_at: datetime",
+          "updated_at: datetime"
         ],
-        "indexes": ["UNIQUE idx_pipeline_issue ON (issue_id)"],
-        "relations": ["->issue"]
+        "indexes": [
+          "UNIQUE idx_pipeline_issue ON (issue_id)"
+        ],
+        "relations": [
+          "->issue"
+        ]
       },
       {
         "name": "task",
         "fields": [
-          "id", "issue_id: record<issue>", "agent_id: record<agent>",
-          "pipeline_stage: string", "status: string (pending|running|completed|failed)",
-          "execenv_path: string", "attempt_number: int DEFAULT 1",
-          "started_at: option<datetime>", "completed_at: option<datetime>",
-          "error: option<string>", "created_at: datetime"
+          "id",
+          "issue_id: record<issue>",
+          "agent_id: record<agent>",
+          "pipeline_stage: string",
+          "status: string (pending|running|completed|failed)",
+          "execenv_path: string",
+          "attempt_number: int DEFAULT 1",
+          "started_at: option<datetime>",
+          "completed_at: option<datetime>",
+          "error: option<string>",
+          "created_at: datetime"
         ],
         "indexes": [
           "idx_task_issue ON (issue_id)",
           "idx_task_status ON (status)"
         ],
-        "relations": ["->issue", "->agent"]
+        "relations": [
+          "->issue",
+          "->agent"
+        ]
       },
       {
         "name": "task_message",
         "fields": [
-          "id", "task_id: record<task>", "sequence: int",
+          "id",
+          "task_id: record<task>",
+          "sequence: int",
           "role: string (assistant|tool_use|tool_result|system)",
-          "content: string", "created_at: datetime"
+          "content: string",
+          "created_at: datetime"
         ],
-        "indexes": ["idx_task_message_seq ON (task_id, sequence)"],
-        "relations": ["->task"]
+        "indexes": [
+          "idx_task_message_seq ON (task_id, sequence)"
+        ],
+        "relations": [
+          "->task"
+        ]
       },
       {
         "name": "artifact",
         "fields": [
-          "id", "issue_id: record<issue>",
+          "id",
+          "issue_id: record<issue>",
           "artifact_type: string (BriefArtifact|PrdArtifact|ArchitectureArtifact|SprintPlanArtifact|CodeReviewArtifact)",
-          "pipeline_stage: string", "data: object",
+          "pipeline_stage: string",
+          "data: object",
           "schema_version: string DEFAULT '1.0'",
-          "created_by_task: record<task>", "created_at: datetime"
+          "created_by_task: record<task>",
+          "created_at: datetime"
         ],
         "indexes": [
           "idx_artifact_issue ON (issue_id)",
           "idx_artifact_type ON (issue_id, artifact_type)"
         ],
-        "relations": ["->issue", "->task"]
+        "relations": [
+          "->issue",
+          "->task"
+        ]
       },
       {
         "name": "comment",
         "fields": [
-          "id", "issue_id: record<issue>",
-          "author_id: string", "author_type: string (member|agent)",
-          "content: string", "parent_id: option<record<comment>>",
+          "id",
+          "issue_id: record<issue>",
+          "author_id: string",
+          "author_type: string (member|agent)",
+          "content: string",
+          "parent_id: option<record<comment>>",
           "created_at: datetime"
         ],
-        "indexes": ["idx_comment_issue ON (issue_id)"],
-        "relations": ["->issue"]
+        "indexes": [
+          "idx_comment_issue ON (issue_id)"
+        ],
+        "relations": [
+          "->issue"
+        ]
       },
       {
         "name": "pat",
         "fields": [
-          "id", "member_id: record<member>", "token_hash: string",
-          "name: string", "last_used_at: option<datetime>",
-          "expires_at: option<datetime>", "created_at: datetime"
+          "id",
+          "member_id: record<member>",
+          "token_hash: string",
+          "name: string",
+          "last_used_at: option<datetime>",
+          "expires_at: option<datetime>",
+          "created_at: datetime"
         ],
-        "indexes": ["UNIQUE idx_pat_hash ON (token_hash)"],
-        "relations": ["->member"]
+        "indexes": [
+          "UNIQUE idx_pat_hash ON (token_hash)"
+        ],
+        "relations": [
+          "->member"
+        ]
       },
       {
         "name": "daemon_token",
         "fields": [
-          "id", "task_id: record<task>", "token_hash: string",
-          "expires_at: datetime", "created_at: datetime"
+          "id",
+          "task_id: record<task>",
+          "token_hash: string",
+          "expires_at: datetime",
+          "created_at: datetime"
         ],
-        "indexes": ["UNIQUE idx_daemon_token_hash ON (token_hash)"],
-        "relations": ["->task"]
+        "indexes": [
+          "UNIQUE idx_daemon_token_hash ON (token_hash)"
+        ],
+        "relations": [
+          "->task"
+        ]
       }
     ],
     "naming_conventions": {
@@ -363,83 +477,323 @@
       "fields": "snake_case",
       "indexes": "idx_{table}_{field(s)}",
       "timestamps": "created_at + updated_at on all mutable tables",
-      "soft_deletes": "none in v1 — hard delete only"
+      "soft_deletes": "none in v1 \u2014 hard delete only"
     }
   },
   "api_surface": {
     "style": "REST JSON over HTTP/1.1",
     "base_path": "/api/v1",
-    "versioning": "URL path prefix — no header-based versioning",
+    "versioning": "URL path prefix \u2014 no header-based versioning",
     "rest_endpoints": [
-      {"method": "POST", "path": "/auth/login", "description": "Email+password → JWT"},
-      {"method": "GET",  "path": "/auth/me", "description": "Current authenticated identity"},
-      {"method": "POST", "path": "/auth/pat", "description": "Create PAT (ens_*)"},
-      {"method": "GET",  "path": "/auth/pat", "description": "List PATs for current member"},
-      {"method": "DELETE","path": "/auth/pat/:pat_id", "description": "Revoke PAT"},
-      {"method": "GET",  "path": "/workspaces", "description": "List workspaces for member"},
-      {"method": "POST", "path": "/workspaces", "description": "Create workspace"},
-      {"method": "GET",  "path": "/workspaces/:ws_id", "description": "Get workspace"},
-      {"method": "GET",  "path": "/workspaces/:ws_id/members", "description": "List members"},
-      {"method": "POST", "path": "/workspaces/:ws_id/members/invite", "description": "Invite member"},
-      {"method": "GET",  "path": "/workspaces/:ws_id/agents", "description": "List agents"},
-      {"method": "POST", "path": "/workspaces/:ws_id/agents", "description": "Create agent"},
-      {"method": "GET",  "path": "/agents/:agent_id", "description": "Get agent"},
-      {"method": "PATCH","path": "/agents/:agent_id", "description": "Update agent"},
-      {"method": "GET",  "path": "/workspaces/:ws_id/projects", "description": "List projects"},
-      {"method": "POST", "path": "/workspaces/:ws_id/projects", "description": "Create project"},
-      {"method": "GET",  "path": "/projects/:project_id", "description": "Get project"},
-      {"method": "GET",  "path": "/projects/:project_id/issues", "description": "List issues (filters: status, priority, assignee, limit, offset)"},
-      {"method": "POST", "path": "/projects/:project_id/issues", "description": "Create issue"},
-      {"method": "GET",  "path": "/issues/:issue_id", "description": "Get issue"},
-      {"method": "PATCH","path": "/issues/:issue_id", "description": "Update issue (title, description, status, priority, assignee)"},
-      {"method": "DELETE","path": "/issues/:issue_id", "description": "Delete issue"},
-      {"method": "GET",  "path": "/issues/:issue_id/comments", "description": "List comments"},
-      {"method": "POST", "path": "/issues/:issue_id/comments", "description": "Add comment"},
-      {"method": "DELETE","path": "/comments/:comment_id", "description": "Delete comment"},
-      {"method": "GET",  "path": "/issues/:issue_id/pipeline", "description": "Get pipeline state"},
-      {"method": "POST", "path": "/issues/:issue_id/pipeline/start", "description": "Start pipeline"},
-      {"method": "POST", "path": "/issues/:issue_id/pipeline/unblock", "description": "Unblock pipeline (human override, resets retry_count)"},
-      {"method": "GET",  "path": "/issues/:issue_id/tasks", "description": "List tasks for issue"},
-      {"method": "GET",  "path": "/tasks/:task_id", "description": "Get task"},
-      {"method": "GET",  "path": "/tasks/:task_id/messages", "description": "Get task messages (params: limit, since_seq)"},
-      {"method": "GET",  "path": "/issues/:issue_id/artifacts", "description": "List artifacts for issue"},
-      {"method": "GET",  "path": "/artifacts/:artifact_id", "description": "Get artifact (full data)"}
+      {
+        "method": "POST",
+        "path": "/auth/login",
+        "description": "Email+password \u2192 JWT"
+      },
+      {
+        "method": "GET",
+        "path": "/auth/me",
+        "description": "Current authenticated identity"
+      },
+      {
+        "method": "POST",
+        "path": "/auth/pat",
+        "description": "Create PAT (ens_*)"
+      },
+      {
+        "method": "GET",
+        "path": "/auth/pat",
+        "description": "List PATs for current member"
+      },
+      {
+        "method": "DELETE",
+        "path": "/auth/pat/:pat_id",
+        "description": "Revoke PAT"
+      },
+      {
+        "method": "GET",
+        "path": "/workspaces",
+        "description": "List workspaces for member"
+      },
+      {
+        "method": "POST",
+        "path": "/workspaces",
+        "description": "Create workspace"
+      },
+      {
+        "method": "GET",
+        "path": "/workspaces/:ws_id",
+        "description": "Get workspace"
+      },
+      {
+        "method": "GET",
+        "path": "/workspaces/:ws_id/members",
+        "description": "List members"
+      },
+      {
+        "method": "POST",
+        "path": "/workspaces/:ws_id/members/invite",
+        "description": "Invite member"
+      },
+      {
+        "method": "GET",
+        "path": "/workspaces/:ws_id/agents",
+        "description": "List agents"
+      },
+      {
+        "method": "POST",
+        "path": "/workspaces/:ws_id/agents",
+        "description": "Create agent"
+      },
+      {
+        "method": "GET",
+        "path": "/agents/:agent_id",
+        "description": "Get agent"
+      },
+      {
+        "method": "PATCH",
+        "path": "/agents/:agent_id",
+        "description": "Update agent"
+      },
+      {
+        "method": "GET",
+        "path": "/workspaces/:ws_id/projects",
+        "description": "List projects"
+      },
+      {
+        "method": "POST",
+        "path": "/workspaces/:ws_id/projects",
+        "description": "Create project"
+      },
+      {
+        "method": "GET",
+        "path": "/projects/:project_id",
+        "description": "Get project"
+      },
+      {
+        "method": "GET",
+        "path": "/projects/:project_id/issues",
+        "description": "List issues (filters: status, priority, assignee, limit, offset)"
+      },
+      {
+        "method": "POST",
+        "path": "/projects/:project_id/issues",
+        "description": "Create issue"
+      },
+      {
+        "method": "GET",
+        "path": "/issues/:issue_id",
+        "description": "Get issue"
+      },
+      {
+        "method": "PATCH",
+        "path": "/issues/:issue_id",
+        "description": "Update issue (title, description, status, priority, assignee)"
+      },
+      {
+        "method": "DELETE",
+        "path": "/issues/:issue_id",
+        "description": "Delete issue"
+      },
+      {
+        "method": "GET",
+        "path": "/issues/:issue_id/comments",
+        "description": "List comments"
+      },
+      {
+        "method": "POST",
+        "path": "/issues/:issue_id/comments",
+        "description": "Add comment"
+      },
+      {
+        "method": "DELETE",
+        "path": "/comments/:comment_id",
+        "description": "Delete comment"
+      },
+      {
+        "method": "GET",
+        "path": "/issues/:issue_id/pipeline",
+        "description": "Get pipeline state"
+      },
+      {
+        "method": "POST",
+        "path": "/issues/:issue_id/pipeline/start",
+        "description": "Start pipeline"
+      },
+      {
+        "method": "POST",
+        "path": "/issues/:issue_id/pipeline/unblock",
+        "description": "Unblock pipeline (human override, resets retry_count)"
+      },
+      {
+        "method": "GET",
+        "path": "/issues/:issue_id/tasks",
+        "description": "List tasks for issue"
+      },
+      {
+        "method": "GET",
+        "path": "/tasks/:task_id",
+        "description": "Get task"
+      },
+      {
+        "method": "GET",
+        "path": "/tasks/:task_id/messages",
+        "description": "Get task messages (params: limit, since_seq)"
+      },
+      {
+        "method": "GET",
+        "path": "/issues/:issue_id/artifacts",
+        "description": "List artifacts for issue"
+      },
+      {
+        "method": "GET",
+        "path": "/artifacts/:artifact_id",
+        "description": "Get artifact (full data)"
+      }
     ],
     "daemon_endpoints": [
-      {"method": "POST", "path": "/daemon/tasks/:task_id/messages", "description": "Append task message (requires edt_* token)", "auth": "DaemonToken"},
-      {"method": "PUT",  "path": "/daemon/tasks/:task_id/status", "description": "Update task status (completed|failed)", "auth": "DaemonToken"},
-      {"method": "POST", "path": "/daemon/tasks/:task_id/artifacts", "description": "Submit validated artifact", "auth": "DaemonToken"}
+      {
+        "method": "POST",
+        "path": "/daemon/tasks/:task_id/messages",
+        "description": "Append task message (requires edt_* token)",
+        "auth": "DaemonToken"
+      },
+      {
+        "method": "PUT",
+        "path": "/daemon/tasks/:task_id/status",
+        "description": "Update task status (completed|failed)",
+        "auth": "DaemonToken"
+      },
+      {
+        "method": "POST",
+        "path": "/daemon/tasks/:task_id/artifacts",
+        "description": "Submit validated artifact",
+        "auth": "DaemonToken"
+      }
     ],
     "websocket_events": [
-      {"type": "task.started",       "payload": {"task_id": "string", "issue_id": "string", "stage": "string", "agent_name": "string"}},
-      {"type": "task.message",       "payload": {"task_id": "string", "seq": "int", "role": "string", "content": "string"}},
-      {"type": "task.completed",     "payload": {"task_id": "string", "artifact_id": "string", "artifact_type": "string"}},
-      {"type": "task.failed",        "payload": {"task_id": "string", "error": "string", "retry_count": "int"}},
-      {"type": "pipeline.transition","payload": {"issue_id": "string", "from": "string", "to": "string", "timestamp": "string"}},
-      {"type": "issue.updated",      "payload": {"issue_id": "string", "changes": "object"}}
+      {
+        "type": "task.started",
+        "payload": {
+          "task_id": "string",
+          "issue_id": "string",
+          "stage": "string",
+          "agent_name": "string"
+        }
+      },
+      {
+        "type": "task.message",
+        "payload": {
+          "task_id": "string",
+          "seq": "int",
+          "role": "string",
+          "content": "string"
+        }
+      },
+      {
+        "type": "task.completed",
+        "payload": {
+          "task_id": "string",
+          "artifact_id": "string",
+          "artifact_type": "string"
+        }
+      },
+      {
+        "type": "task.failed",
+        "payload": {
+          "task_id": "string",
+          "error": "string",
+          "retry_count": "int"
+        }
+      },
+      {
+        "type": "pipeline.transition",
+        "payload": {
+          "issue_id": "string",
+          "from": "string",
+          "to": "string",
+          "timestamp": "string"
+        }
+      },
+      {
+        "type": "issue.updated",
+        "payload": {
+          "issue_id": "string",
+          "changes": "object"
+        }
+      }
     ],
     "nats_subjects": [
-      {"subject": "ensi.task.created",              "publisher": "ensi-server", "subscriber": "ensi-daemon", "payload": "task_id, issue_id, agent_id, stage, execenv_path"},
-      {"subject": "ensi.task.{task_id}.message",    "publisher": "ensi-daemon", "subscriber": "ensi-server (WS hub)", "payload": "seq, role, content"},
-      {"subject": "ensi.task.{task_id}.completed",  "publisher": "ensi-daemon", "subscriber": "ensi-server, ensi-pipeline", "payload": "artifact_id, artifact_type"},
-      {"subject": "ensi.task.{task_id}.failed",     "publisher": "ensi-daemon", "subscriber": "ensi-server, ensi-pipeline", "payload": "error, retry_count"},
-      {"subject": "ensi.pipeline.{issue_id}.transition", "publisher": "ensi-pipeline", "subscriber": "ensi-server (WS hub)", "payload": "from, to, timestamp"},
-      {"subject": "ensi.issue.{issue_id}.updated",  "publisher": "ensi-server",  "subscriber": "ensi-server (WS hub)", "payload": "changes"}
+      {
+        "subject": "ensi.task.created",
+        "publisher": "ensi-server",
+        "subscriber": "ensi-daemon",
+        "payload": "task_id, issue_id, agent_id, stage, execenv_path"
+      },
+      {
+        "subject": "ensi.task.{task_id}.message",
+        "publisher": "ensi-daemon",
+        "subscriber": "ensi-server (WS hub)",
+        "payload": "seq, role, content"
+      },
+      {
+        "subject": "ensi.task.{task_id}.completed",
+        "publisher": "ensi-daemon",
+        "subscriber": "ensi-server, ensi-pipeline",
+        "payload": "artifact_id, artifact_type"
+      },
+      {
+        "subject": "ensi.task.{task_id}.failed",
+        "publisher": "ensi-daemon",
+        "subscriber": "ensi-server, ensi-pipeline",
+        "payload": "error, retry_count"
+      },
+      {
+        "subject": "ensi.pipeline.{issue_id}.transition",
+        "publisher": "ensi-pipeline",
+        "subscriber": "ensi-server (WS hub)",
+        "payload": "from, to, timestamp"
+      },
+      {
+        "subject": "ensi.issue.{issue_id}.updated",
+        "publisher": "ensi-server",
+        "subscriber": "ensi-server (WS hub)",
+        "payload": "changes"
+      }
     ],
     "error_format": {
-      "schema": {"error": {"code": "string", "message": "string", "details": "object|null"}},
+      "schema": {
+        "error": {
+          "code": "string",
+          "message": "string",
+          "details": "object|null"
+        }
+      },
       "example_codes": [
-        "UNAUTHENTICATED", "FORBIDDEN", "NOT_FOUND", "VALIDATION_ERROR",
-        "ARTIFACT_VALIDATION_FAILED", "PIPELINE_ALREADY_STARTED",
-        "PIPELINE_NOT_STARTED", "MAX_RETRIES_EXCEEDED", "CONFLICT"
+        "UNAUTHENTICATED",
+        "FORBIDDEN",
+        "NOT_FOUND",
+        "VALIDATION_ERROR",
+        "ARTIFACT_VALIDATION_FAILED",
+        "PIPELINE_ALREADY_STARTED",
+        "PIPELINE_NOT_STARTED",
+        "MAX_RETRIES_EXCEEDED",
+        "CONFLICT"
       ]
     },
     "pagination": {
       "style": "offset",
-      "params": {"limit": "int (default 50, max 200)", "offset": "int (default 0)"},
-      "response": {"items": "array", "total": "int", "has_more": "bool"}
+      "params": {
+        "limit": "int (default 50, max 200)",
+        "offset": "int (default 0)"
+      },
+      "response": {
+        "items": "array",
+        "total": "int",
+        "has_more": "bool"
+      }
     },
-    "rate_limiting": "none in v1 — deferred"
+    "rate_limiting": "none in v1 \u2014 deferred"
   },
   "frontend": {
     "framework": "Leptos 0.7 SSR + WASM",
@@ -465,18 +819,30 @@
     },
     "known_constraints": [
       "borrow-checker + clone-before-capture pattern required in closures",
-      "LOC ~30% larger than equivalent Next.js — budget accordingly",
+      "LOC ~30% larger than equivalent Next.js \u2014 budget accordingly",
       "3-4 day learning curve for Rust devs new to reactive UI"
     ]
   },
   "daemon": {
-    "task_lifecycle": "poll NATS ensi.task.created → create execenv → inject context files → spawn claude-code subprocess → stream messages via NATS → on exit: submit artifact or report failure",
+    "task_lifecycle": "poll NATS ensi.task.created \u2192 create execenv \u2192 inject context files \u2192 spawn claude-code subprocess \u2192 stream messages via NATS \u2192 on exit: submit artifact or report failure",
     "execenv_path": "~/ensi_workspaces/{ws_id}/{task_id}/",
     "context_files": [
-      {"file": "AGENT.md",    "content": "Agent persona, instructions, capabilities"},
-      {"file": "ISSUE.md",    "content": "Issue title, description, status, comments"},
-      {"file": "PIPELINE.md", "content": "Current pipeline state, previous artifact summaries"},
-      {"file": "REPOS.md",    "content": "Checked-out repository paths and branches"}
+      {
+        "file": "AGENT.md",
+        "content": "Agent persona, instructions, capabilities"
+      },
+      {
+        "file": "ISSUE.md",
+        "content": "Issue title, description, status, comments"
+      },
+      {
+        "file": "PIPELINE.md",
+        "content": "Current pipeline state, previous artifact summaries"
+      },
+      {
+        "file": "REPOS.md",
+        "content": "Checked-out repository paths and branches"
+      }
     ],
     "polling_interval_ms": 3000,
     "subprocess_tool": "claude-code CLI (claude binary)",
@@ -489,7 +855,13 @@
         "type": "JWT HS256",
         "prefix": null,
         "usage": "Short-lived user sessions (exp: 24h). Issued on /auth/login.",
-        "claims": {"sub": "member_id", "ws": "workspace_id", "role": "string", "exp": "unix", "iat": "unix"}
+        "claims": {
+          "sub": "member_id",
+          "ws": "workspace_id",
+          "role": "string",
+          "exp": "unix",
+          "iat": "unix"
+        }
       },
       {
         "type": "PAT",
@@ -501,10 +873,13 @@
         "type": "DaemonToken",
         "prefix": "edt_",
         "usage": "Per-task short-lived token (exp: task TTL + 1h). Only allows daemon endpoints.",
-        "claims": {"task_id": "string", "exp": "unix"}
+        "claims": {
+          "task_id": "string",
+          "exp": "unix"
+        }
       }
     ],
-    "enforcement": "Axum middleware layer — extracts token from Authorization: Bearer <token>, resolves identity, attaches to request extensions",
+    "enforcement": "Axum middleware layer \u2014 extracts token from Authorization: Bearer <token>, resolves identity, attaches to request extensions",
     "authorization": "Workspace-scoped RBAC: owner > admin > member. Agent tokens are workspace-scoped with pipeline-only permissions."
   },
   "adr": [
@@ -514,13 +889,13 @@
       "context": "Frontend framework selection for Ensi v1. Team is Rust-first. SP-02 validated Leptos feasibility.",
       "decision": "Leptos 0.7 with Axum SSR and WASM hydration.",
       "consequences": [
-        "POSITIVE: Single language (Rust) across full stack — no context switch",
-        "POSITIVE: Single binary deployment — Axum serves both API and SSR frontend",
-        "POSITIVE: Type-safe server functions — no REST/GraphQL layer for UI calls",
-        "NEGATIVE: DnD not available — deferred to v1.1 (click-to-move instead)",
+        "POSITIVE: Single language (Rust) across full stack \u2014 no context switch",
+        "POSITIVE: Single binary deployment \u2014 Axum serves both API and SSR frontend",
+        "POSITIVE: Type-safe server functions \u2014 no REST/GraphQL layer for UI calls",
+        "NEGATIVE: DnD not available \u2014 deferred to v1.1 (click-to-move instead)",
         "NEGATIVE: LOC ~30% larger than Next.js equivalent",
         "NEGATIVE: 3-4 day learning curve for devs new to Leptos reactive model",
-        "ALTERNATIVE REJECTED: Next.js — adds Node.js runtime, breaks single-binary deploy, splits language stack"
+        "ALTERNATIVE REJECTED: Next.js \u2014 adds Node.js runtime, breaks single-binary deploy, splits language stack"
       ]
     },
     {
@@ -532,8 +907,8 @@
         "POSITIVE: Flash reduces cost and latency for high-frequency stages",
         "POSITIVE: Pro quality for the two most architecturally critical stages",
         "NEGATIVE: Two SDK configurations to maintain",
-        "ALTERNATIVE REJECTED: Pro-only — 3-4x cost increase, latency acceptable but unnecessary for simpler tasks",
-        "ALTERNATIVE REJECTED: Flash-only — SP-01 showed quality degradation on complex PRD/Architecture schemas"
+        "ALTERNATIVE REJECTED: Pro-only \u2014 3-4x cost increase, latency acceptable but unnecessary for simpler tasks",
+        "ALTERNATIVE REJECTED: Flash-only \u2014 SP-01 showed quality degradation on complex PRD/Architecture schemas"
       ]
     },
     {
@@ -543,11 +918,11 @@
       "decision": "Maximum 3 retries with error injection: on validation failure, the validation error is appended to the prompt as context for the next attempt. Retry loop is owned by AgentExecutor, not Pipeline FSM.",
       "consequences": [
         "POSITIVE: 85-90% of violations resolved within 3 attempts per SP-01",
-        "POSITIVE: FSM stays simple — only sees success or max_retries_exceeded",
+        "POSITIVE: FSM stays simple \u2014 only sees success or max_retries_exceeded",
         "POSITIVE: Error injection gives the model context to self-correct without a full re-generation",
-        "NEGATIVE: Up to 3 Gemini API calls per stage on bad runs — ~3x latency in worst case",
-        "ALTERNATIVE REJECTED: Schema simplification only — reduces but doesn't eliminate failures",
-        "ALTERNATIVE REJECTED: Retry without error injection — lower success rate per SP-01"
+        "NEGATIVE: Up to 3 Gemini API calls per stage on bad runs \u2014 ~3x latency in worst case",
+        "ALTERNATIVE REJECTED: Schema simplification only \u2014 reduces but doesn't eliminate failures",
+        "ALTERNATIVE REJECTED: Retry without error injection \u2014 lower success rate per SP-01"
       ]
     },
     {
@@ -556,14 +931,14 @@
       "context": "Need a persistent store that supports single-binary deployment and flexible schema for artifact blobs.",
       "decision": "SurrealDB 3.0 in embedded mode (no separate DB process). Data stored under ~/ensi_data/.",
       "consequences": [
-        "POSITIVE: Single binary — no separate DB process to manage",
+        "POSITIVE: Single binary \u2014 no separate DB process to manage",
         "POSITIVE: SCHEMAFULL mode gives schema enforcement without a migration framework",
-        "POSITIVE: Native record links replace foreign keys for graph-like relations (issue → project → workspace)",
+        "POSITIVE: Native record links replace foreign keys for graph-like relations (issue \u2192 project \u2192 workspace)",
         "POSITIVE: `object` field type stores artifact JSON blobs natively without serialization overhead",
-        "NEGATIVE: Smaller ecosystem than PostgreSQL — fewer ORM options",
-        "NEGATIVE: SurrealDB 3.0 is relatively new — fewer production case studies",
-        "NEGATIVE: No horizontal scaling in embedded mode — single node only (acceptable for v1 scope)",
-        "ALTERNATIVE REJECTED: PostgreSQL + separate process — breaks single-binary deploy and adds ops complexity"
+        "NEGATIVE: Smaller ecosystem than PostgreSQL \u2014 fewer ORM options",
+        "NEGATIVE: SurrealDB 3.0 is relatively new \u2014 fewer production case studies",
+        "NEGATIVE: No horizontal scaling in embedded mode \u2014 single node only (acceptable for v1 scope)",
+        "ALTERNATIVE REJECTED: PostgreSQL + separate process \u2014 breaks single-binary deploy and adds ops complexity"
       ]
     },
     {
@@ -573,23 +948,23 @@
       "decision": "Click-to-move: clicking an issue opens a column picker dropdown. Drag-and-drop deferred to v1.1.",
       "consequences": [
         "POSITIVE: Eliminates high-risk custom DnD implementation",
-        "POSITIVE: Accessible by default — keyboard-navigable column picker",
+        "POSITIVE: Accessible by default \u2014 keyboard-navigable column picker",
         "POSITIVE: Works identically on desktop and mobile",
         "NEGATIVE: Less intuitive UX than DnD for power users",
         "NEGATIVE: Feature parity gap vs. Jira/Linear until v1.1",
-        "ALTERNATIVE REJECTED: Custom DnD from scratch — estimated 2-3 week spike, unacceptable for 8-week MVP"
+        "ALTERNATIVE REJECTED: Custom DnD from scratch \u2014 estimated 2-3 week spike, unacceptable for 8-week MVP"
       ]
     }
   ],
   "technical_risks": [
     {
-      "risk": "Gemini API key not validated in SP-01 — latency metrics are estimates",
+      "risk": "Gemini API key not validated in SP-01 \u2014 latency metrics are estimates",
       "severity": "medium",
       "mitigation": "Run GEMINI_API_KEY=<key> cargo run in _bmad/spikes/sp-01/ before Week 3 to validate p95 latency",
       "owner": "Dev team"
     },
     {
-      "risk": "SurrealDB 3.0 embedded stability — limited production data",
+      "risk": "SurrealDB 3.0 embedded stability \u2014 limited production data",
       "severity": "low",
       "mitigation": "Use SCHEMAFULL mode to catch schema violations early. Add DB health check to server startup.",
       "owner": "ensi-db crate maintainer"
@@ -604,7 +979,7 @@
   "open_items": [
     {
       "id": "OI-001",
-      "description": "SP-01 API key validation pending — latency metrics (p50 ~1800ms, p95 ~4200ms) are estimates from dry runs",
+      "description": "SP-01 API key validation pending \u2014 latency metrics (p50 ~1800ms, p95 ~4200ms) are estimates from dry runs",
       "action": "Run `GEMINI_API_KEY=<key> cargo run` in `_bmad/spikes/sp-01/` before Week 3 sprint starts",
       "blocking": false
     },
@@ -613,6 +988,13 @@
       "description": "Artifact schemas for SprintPlanArtifact and CodeReviewArtifact not yet defined in prd-artifact.json",
       "action": "SM and Dev agents must define these schemas before their respective pipeline stages begin",
       "blocking": false
+    },
+    {
+      "id": "OI-003",
+      "description": "PrdArtifact structured output fails 100% on gemini-2.5-pro (EOF while parsing at ~2100-2700 output tokens). Schema too large for a single Gemini structured-output call.",
+      "action": "Planning stage uses two sequential Gemini calls: (1) PrdCoreArtifact for scalar fields, (2) PrdStoriesArtifact for epics/user_stories. Both schemas target < 1200 output tokens. AgentExecutor merges results before validation. See prd-artifact.json artifact_schemas for both schemas.",
+      "blocking": true,
+      "resolved_by": "T-008b \u2014 split schemas defined in prd-artifact.json; T-009 planning stage adapter must implement the 2-call sequence"
     }
   ]
 }
