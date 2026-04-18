@@ -196,11 +196,11 @@
   "agent_executor": {
     "trait_definition": "AgentExecutor: model_for_stage(stage: PipelineStage) -> GeminiModel, execute(stage, context, schema) -> Result<Value, ExecutorError>",
     "model_selection": {
-      "Discovery": "gemini-2.0-flash",
+      "Discovery": "gemini-2.5-flash",
       "Planning": "gemini-2.5-pro",
       "Architecture": "gemini-2.5-pro",
-      "Development": "gemini-2.0-flash",
-      "Review": "gemini-2.0-flash"
+      "Development": "gemini-2.5-flash",
+      "Review": "gemini-2.5-flash"
     },
     "schema_preprocessing": [
       "strip additionalProperties",
@@ -208,11 +208,57 @@
       "strip oneOf",
       "strip anyOf"
     ],
+    "latency_actuals": {
+      "source": "SP-01 real API runs — 2026-04-18",
+      "brief_artifact": {
+        "model": "gemini-2.5-flash",
+        "runs": 10,
+        "compliance_rate": 1.0,
+        "p50_ms": 7164,
+        "p95_ms": 9658
+      },
+      "prd_artifact": {
+        "model": "gemini-2.5-pro",
+        "runs": 5,
+        "compliance_rate": 0.0,
+        "p50_ms": 31690,
+        "p95_ms": 32023,
+        "failure_mode": "parse_error: all 5 runs produce truncated JSON (EOF while parsing) at ~2100–2700 output tokens",
+        "root_cause": "Gemini structured output mode truncates large JSON responses before completion; PrdArtifact schema is too large for a single structured call",
+        "action_required": "Split PrdArtifact into 2 sequential calls (e.g. PrdCoreArtifact + PrdStoriesArtifact) OR simplify schema to reduce output size below ~1500 tokens"
+      },
+      "nfr_status": {
+        "nfr_limit_ms": 300000,
+        "brief_artifact_ok": true,
+        "prd_artifact_ok": false,
+        "note": "BriefArtifact latency (p95 9.7s) is well within 5min NFR. PrdArtifact fails before latency matters — truncation must be fixed first."
+      }
+    },
     "latency_estimates": {
       "p50_ms": 1800,
       "p95_ms": 4200,
       "nfr_limit_ms": 300000,
       "note": "p95 4200ms × 5 stages × up to 3 retries = ~63s worst case, well within 20min NFR"
+    },
+    "planning_stage_override": {
+      "note": "OI-003 — Planning stage requires two sequential structured-output calls instead of one",
+      "call_sequence": [
+        {
+          "step": 1,
+          "schema": "PrdCoreArtifact",
+          "target_max_output_tokens": 1200,
+          "fields": "problem_statement, goals, non_goals, constraints, success_metrics, target_audience, timeline_weeks"
+        },
+        {
+          "step": 2,
+          "schema": "PrdStoriesArtifact",
+          "target_max_output_tokens": 1200,
+          "fields": "epics, user_stories (with acceptance_criteria)",
+          "context_from_step_1": true
+        }
+      ],
+      "merge_into": "PrdArtifact",
+      "validation": "Validate each sub-call individually; merge; validate merged PrdArtifact before advancing FSM"
     }
   },
   "database_schema": {
