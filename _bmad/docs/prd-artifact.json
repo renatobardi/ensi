@@ -27,12 +27,14 @@
       ],
       "fail_criteria": "If registration or message exchange requires changes to the Multica daemon source, stop and escalate",
       "effort": "S",
-      "blocks": ["EP-03"]
+      "blocks": [
+        "EP-03"
+      ]
     },
     {
       "id": "SP-02",
       "title": "BMad Prompt Portability",
-      "goal": "Confirm that core BMad Analyst, PM, and Architect prompts produce useful structured output when invoked via the Anthropic API directly — without IDE, CLAUDE.md, or human guidance during generation.",
+      "goal": "Confirm that core BMad Analyst, PM, and Architect prompts produce useful structured output when invoked via the Anthropic API directly \u2014 without IDE, CLAUDE.md, or human guidance during generation.",
       "done_when": [
         "Analyst prompt produces a product-brief.md rated >= 4/5 by a developer unfamiliar with the project",
         "PM prompt consumes the brief and produces a PRD with >= 3 testable user stories",
@@ -41,7 +43,11 @@
       ],
       "fail_criteria": "If prompts require substantial rewriting or output quality < 3/5, escalate scope pivot",
       "effort": "S",
-      "blocks": ["EP-04", "EP-05", "EP-06"]
+      "blocks": [
+        "EP-04",
+        "EP-05",
+        "EP-06"
+      ]
     }
   ],
   "features": [
@@ -59,11 +65,14 @@
         "Given an ACP agent is registered, when a task is sent via multica CLI, then the agent receives and processes it without daemon changes"
       ],
       "artifact_schema": null,
-      "functional_requirements": ["FR-01", "FR-02"]
+      "functional_requirements": [
+        "FR-01",
+        "FR-02"
+      ]
     },
     {
       "id": "F-002",
-      "name": "Analyst Stage — Clarifying Dialogue + product-brief.md",
+      "name": "Analyst Stage \u2014 Clarifying Dialogue + product-brief.md",
       "priority": "must",
       "epic": "EP-04",
       "user_stories": [
@@ -77,11 +86,17 @@
         "The Analyst asks no more than 5 clarifying questions total"
       ],
       "artifact_schema": "BriefArtifact",
-      "functional_requirements": ["FR-05", "FR-08", "FR-09", "FR-10", "FR-11"]
+      "functional_requirements": [
+        "FR-05",
+        "FR-08",
+        "FR-09",
+        "FR-10",
+        "FR-11"
+      ]
     },
     {
       "id": "F-003",
-      "name": "PM Stage — PRD with Testable Acceptance Criteria",
+      "name": "PM Stage \u2014 PRD with Testable Acceptance Criteria",
       "priority": "must",
       "epic": "EP-05",
       "user_stories": [
@@ -93,12 +108,18 @@
         "Given the PRD is complete, then it includes an explicit MVP scope section with in-scope and out-of-scope lists",
         "Given the PM completes, then prd.md is committed to .ensi/docs/ and a summary comment is posted to the Multica issue"
       ],
-      "artifact_schema": "PrdArtifact",
-      "functional_requirements": ["FR-06", "FR-08", "FR-09", "FR-10", "FR-11"]
+      "artifact_schema": "PrdCoreArtifact + PrdStoriesArtifact",
+      "functional_requirements": [
+        "FR-06",
+        "FR-08",
+        "FR-09",
+        "FR-10",
+        "FR-11"
+      ]
     },
     {
       "id": "F-004",
-      "name": "Architect Stage — Architecture Decision Record",
+      "name": "Architect Stage \u2014 Architecture Decision Record",
       "priority": "must",
       "epic": "EP-06",
       "user_stories": [
@@ -111,7 +132,13 @@
         "Given the ADR is generated, then rejected alternatives are listed with reasons for rejection"
       ],
       "artifact_schema": "ArchitectureArtifact",
-      "functional_requirements": ["FR-07", "FR-08", "FR-09", "FR-10", "FR-11"]
+      "functional_requirements": [
+        "FR-07",
+        "FR-08",
+        "FR-09",
+        "FR-10",
+        "FR-11"
+      ]
     },
     {
       "id": "F-005",
@@ -127,7 +154,9 @@
         "Given validation fails after 3 retries, then the session is marked failed, the issue status is updated to blocked, and an error comment is posted"
       ],
       "artifact_schema": null,
-      "functional_requirements": ["FR-08"]
+      "functional_requirements": [
+        "FR-08"
+      ]
     },
     {
       "id": "F-006",
@@ -143,7 +172,9 @@
         "Given a team member posts reject or restart with a reason, then Ensi re-runs the current stage using the rejection reason as additional context"
       ],
       "artifact_schema": null,
-      "functional_requirements": ["FR-09"]
+      "functional_requirements": [
+        "FR-09"
+      ]
     },
     {
       "id": "F-007",
@@ -160,7 +191,11 @@
         "Given a resume is offered, then Ensi does not silently re-run completed stages"
       ],
       "artifact_schema": null,
-      "functional_requirements": ["FR-13", "FR-14", "FR-15"]
+      "functional_requirements": [
+        "FR-13",
+        "FR-14",
+        "FR-15"
+      ]
     },
     {
       "id": "F-008",
@@ -176,7 +211,10 @@
         "Given multica agent add ensi is run without ANTHROPIC_API_KEY, when the first BP issue is created, then Ensi posts a clear error message with the exact env var name and setup instruction"
       ],
       "artifact_schema": null,
-      "functional_requirements": ["FR-16", "FR-17"]
+      "functional_requirements": [
+        "FR-16",
+        "FR-17"
+      ]
     },
     {
       "id": "F-009",
@@ -191,7 +229,10 @@
         "Given any pipeline stage fails after retries, when the failure is unrecoverable, then Ensi posts a comment explaining the failure in plain language and updates the issue status to blocked"
       ],
       "artifact_schema": null,
-      "functional_requirements": ["FR-03", "FR-04"]
+      "functional_requirements": [
+        "FR-03",
+        "FR-04"
+      ]
     },
     {
       "id": "F-010",
@@ -206,36 +247,90 @@
         "Given a stage completes, when I view the issue comments, then the most recent Ensi comment clearly states which stage completed and includes the artefact path"
       ],
       "artifact_schema": null,
-      "functional_requirements": ["FR-03", "FR-04"]
+      "functional_requirements": [
+        "FR-03",
+        "FR-04"
+      ]
     }
   ],
   "functional_requirements": {
     "agent_protocol": [
-      {"id": "FR-01", "description": "The system must expose an ACP-compatible agent interface that the Multica daemon can discover and register automatically."},
-      {"id": "FR-02", "description": "The system must receive task payloads from the Multica daemon when a Multica issue is tagged BP (Brainstorm/Planning)."},
-      {"id": "FR-03", "description": "The system must post structured comments to the triggering Multica issue at stage completion, stage failure, and when awaiting human input."},
-      {"id": "FR-04", "description": "The system must update the Multica issue status to reflect pipeline state (in_progress, in_review, blocked, done)."}
+      {
+        "id": "FR-01",
+        "description": "The system must expose an ACP-compatible agent interface that the Multica daemon can discover and register automatically."
+      },
+      {
+        "id": "FR-02",
+        "description": "The system must receive task payloads from the Multica daemon when a Multica issue is tagged BP (Brainstorm/Planning)."
+      },
+      {
+        "id": "FR-03",
+        "description": "The system must post structured comments to the triggering Multica issue at stage completion, stage failure, and when awaiting human input."
+      },
+      {
+        "id": "FR-04",
+        "description": "The system must update the Multica issue status to reflect pipeline state (in_progress, in_review, blocked, done)."
+      }
     ],
     "planning_pipeline": [
-      {"id": "FR-05", "description": "The system must execute the Analyst stage first, producing product-brief.md in .ensi/docs/."},
-      {"id": "FR-06", "description": "The system must execute the PM stage after Analyst completes and human approval is granted, producing prd.md."},
-      {"id": "FR-07", "description": "The system must execute the Architect stage after PM completes and human approval is granted, producing architecture.md."},
-      {"id": "FR-08", "description": "Each stage must validate its output against a defined schema before advancing. On validation failure, retry up to 3 times before marking the session failed."},
-      {"id": "FR-09", "description": "The system must pause between stages and wait for explicit human approval (comment containing LGTM or approve) before advancing."}
+      {
+        "id": "FR-05",
+        "description": "The system must execute the Analyst stage first, producing product-brief.md in .ensi/docs/."
+      },
+      {
+        "id": "FR-06",
+        "description": "The system must execute the PM stage after Analyst completes and human approval is granted, producing prd.md."
+      },
+      {
+        "id": "FR-07",
+        "description": "The system must execute the Architect stage after PM completes and human approval is granted, producing architecture.md."
+      },
+      {
+        "id": "FR-08",
+        "description": "Each stage must validate its output against a defined schema before advancing. On validation failure, retry up to 3 times before marking the session failed."
+      },
+      {
+        "id": "FR-09",
+        "description": "The system must pause between stages and wait for explicit human approval (comment containing LGTM or approve) before advancing."
+      }
     ],
     "artifact_management": [
-      {"id": "FR-10", "description": "All artefacts must be stored as plain markdown in .ensi/docs/ within the project repo."},
-      {"id": "FR-11", "description": "The system must commit artefacts to the project repository at each stage boundary."},
-      {"id": "FR-12", "description": "Artefact filenames must be consistent and predictable — no timestamps or hashes in filenames."}
+      {
+        "id": "FR-10",
+        "description": "All artefacts must be stored as plain markdown in .ensi/docs/ within the project repo."
+      },
+      {
+        "id": "FR-11",
+        "description": "The system must commit artefacts to the project repository at each stage boundary."
+      },
+      {
+        "id": "FR-12",
+        "description": "Artefact filenames must be consistent and predictable \u2014 no timestamps or hashes in filenames."
+      }
     ],
     "session_state": [
-      {"id": "FR-13", "description": "The system must persist session state to .ensi/state.json after every stage transition."},
-      {"id": "FR-14", "description": "The system must resume a paused or interrupted session from the last successfully completed stage."},
-      {"id": "FR-15", "description": "The system must support concurrent sessions across different project repos without interference."}
+      {
+        "id": "FR-13",
+        "description": "The system must persist session state to .ensi/state.json after every stage transition."
+      },
+      {
+        "id": "FR-14",
+        "description": "The system must resume a paused or interrupted session from the last successfully completed stage."
+      },
+      {
+        "id": "FR-15",
+        "description": "The system must support concurrent sessions across different project repos without interference."
+      }
     ],
     "onboarding": [
-      {"id": "FR-16", "description": "The system must be installable as a Multica agent with a single command (multica agent add ensi). No config file editing required beyond setting ANTHROPIC_API_KEY."},
-      {"id": "FR-17", "description": "The system must display a clear, human-readable error message if ANTHROPIC_API_KEY is not set, with setup instructions."}
+      {
+        "id": "FR-16",
+        "description": "The system must be installable as a Multica agent with a single command (multica agent add ensi). No config file editing required beyond setting ANTHROPIC_API_KEY."
+      },
+      {
+        "id": "FR-17",
+        "description": "The system must display a clear, human-readable error message if ANTHROPIC_API_KEY is not set, with setup instructions."
+      }
     ]
   },
   "non_functional_requirements": {
@@ -271,184 +366,581 @@
   "artifact_schemas": {
     "BriefArtifact": {
       "description": "Produced by the Analyst agent at the Discovery stage. Captures the validated product brief including personas, risks, and constraints.",
-      "required_fields": ["version", "product_name", "scope", "date", "produced_by", "status", "vision", "problem_statement", "personas", "key_goals", "non_goals_v1", "features_classified", "competitive_landscape", "constraints", "risks", "assumptions_to_validate", "success_metrics", "recommendations_to_pm"],
+      "required_fields": [
+        "version",
+        "product_name",
+        "scope",
+        "date",
+        "produced_by",
+        "status",
+        "vision",
+        "problem_statement",
+        "personas",
+        "key_goals",
+        "non_goals_v1",
+        "features_classified",
+        "competitive_landscape",
+        "constraints",
+        "risks",
+        "assumptions_to_validate",
+        "success_metrics",
+        "recommendations_to_pm"
+      ],
       "schema": {
-        "version": {"type": "string", "example": "1.0"},
-        "product_name": {"type": "string"},
-        "scope": {"type": "string", "example": "v1"},
-        "date": {"type": "string", "format": "YYYY-MM-DD"},
-        "produced_by": {"type": "string", "enum": ["Analyst"]},
-        "status": {"type": "string", "enum": ["draft", "complete"]},
-        "vision": {"type": "string"},
-        "problem_statement": {"type": "string"},
+        "version": {
+          "type": "string",
+          "example": "1.0"
+        },
+        "product_name": {
+          "type": "string"
+        },
+        "scope": {
+          "type": "string",
+          "example": "v1"
+        },
+        "date": {
+          "type": "string",
+          "format": "YYYY-MM-DD"
+        },
+        "produced_by": {
+          "type": "string",
+          "enum": [
+            "Analyst"
+          ]
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "draft",
+            "complete"
+          ]
+        },
+        "vision": {
+          "type": "string"
+        },
+        "problem_statement": {
+          "type": "string"
+        },
         "personas": {
           "type": "array",
           "items": {
-            "id": {"type": "string", "pattern": "P-[0-9]+"},
-            "name": {"type": "string"},
-            "archetype": {"type": "string"},
-            "profile": {"type": "string"},
-            "pain_points": {"type": "array", "items": {"type": "string"}},
-            "goals": {"type": "array", "items": {"type": "string"}},
-            "trigger": {"type": "string"}
+            "id": {
+              "type": "string",
+              "pattern": "P-[0-9]+"
+            },
+            "name": {
+              "type": "string"
+            },
+            "archetype": {
+              "type": "string"
+            },
+            "profile": {
+              "type": "string"
+            },
+            "pain_points": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "goals": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "trigger": {
+              "type": "string"
+            }
           },
           "minItems": 1
         },
-        "key_goals": {"type": "array", "items": {"type": "string"}, "minItems": 1},
-        "non_goals_v1": {"type": "array", "items": {"type": "string"}},
+        "key_goals": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        },
+        "non_goals_v1": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "features_classified": {
           "type": "object",
           "properties": {
-            "must": {"type": "array", "items": {"id": "string", "name": "string"}},
-            "should": {"type": "array", "items": {"id": "string", "name": "string"}},
-            "could": {"type": "array", "items": {"id": "string", "name": "string"}}
+            "must": {
+              "type": "array",
+              "items": {
+                "id": "string",
+                "name": "string"
+              }
+            },
+            "should": {
+              "type": "array",
+              "items": {
+                "id": "string",
+                "name": "string"
+              }
+            },
+            "could": {
+              "type": "array",
+              "items": {
+                "id": "string",
+                "name": "string"
+              }
+            }
           },
-          "required": ["must", "should", "could"]
+          "required": [
+            "must",
+            "should",
+            "could"
+          ]
         },
         "competitive_landscape": {
           "type": "array",
           "items": {
-            "name": {"type": "string"},
-            "approach": {"type": "string"},
-            "gap": {"type": "string"}
+            "name": {
+              "type": "string"
+            },
+            "approach": {
+              "type": "string"
+            },
+            "gap": {
+              "type": "string"
+            }
           }
         },
         "constraints": {
           "type": "object",
           "properties": {
-            "technical": {"type": "array", "items": {"type": "string"}},
-            "business": {"type": "array", "items": {"type": "string"}},
-            "compliance": {"type": "array", "items": {"type": "string"}},
-            "timeline": {"type": "string"}
+            "technical": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "business": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "compliance": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "timeline": {
+              "type": "string"
+            }
           },
-          "required": ["technical", "business", "compliance"]
+          "required": [
+            "technical",
+            "business",
+            "compliance"
+          ]
         },
         "risks": {
           "type": "array",
           "items": {
-            "id": {"type": "string", "pattern": "R-[0-9]+"},
-            "title": {"type": "string"},
-            "impact": {"type": "string", "enum": ["low", "medium", "high"]},
-            "probability": {"type": "string", "enum": ["low", "medium", "high"]},
-            "score": {"type": "number", "minimum": 1, "maximum": 9},
-            "mitigation": {"type": "string"}
+            "id": {
+              "type": "string",
+              "pattern": "R-[0-9]+"
+            },
+            "title": {
+              "type": "string"
+            },
+            "impact": {
+              "type": "string",
+              "enum": [
+                "low",
+                "medium",
+                "high"
+              ]
+            },
+            "probability": {
+              "type": "string",
+              "enum": [
+                "low",
+                "medium",
+                "high"
+              ]
+            },
+            "score": {
+              "type": "number",
+              "minimum": 1,
+              "maximum": 9
+            },
+            "mitigation": {
+              "type": "string"
+            }
           }
         },
         "assumptions_to_validate": {
           "type": "array",
           "items": {
-            "id": {"type": "string", "pattern": "A-[0-9]+"},
-            "statement": {"type": "string"},
-            "validation": {"type": "string"}
+            "id": {
+              "type": "string",
+              "pattern": "A-[0-9]+"
+            },
+            "statement": {
+              "type": "string"
+            },
+            "validation": {
+              "type": "string"
+            }
           }
         },
-        "success_metrics": {"type": "object"},
-        "recommendations_to_pm": {"type": "array", "items": {"type": "string"}}
+        "success_metrics": {
+          "type": "object"
+        },
+        "recommendations_to_pm": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
       }
     },
     "PrdArtifact": {
-      "description": "Produced by the PM agent at the Planning stage. Contains functional/non-functional requirements, user stories with Gherkin acceptance criteria, epics, MVP scope, and artifact schemas.",
-      "required_fields": ["version", "product_name", "scope", "date", "produced_by", "input_artifact", "status", "pipeline_stages", "validation_spikes", "features", "functional_requirements", "non_functional_requirements", "artifact_schemas", "out_of_scope_v1", "open_questions"],
+      "description": "Stored format assembled from two sequential Gemini calls (PrdCoreArtifact + PrdStoriesArtifact). Use PrdCoreArtifact and PrdStoriesArtifact schemas for LLM generation; merge the results into this format for storage and downstream consumption.",
+      "required_fields": [
+        "version",
+        "product_name",
+        "scope",
+        "date",
+        "produced_by",
+        "input_artifact",
+        "status",
+        "pipeline_stages",
+        "validation_spikes",
+        "features",
+        "functional_requirements",
+        "non_functional_requirements",
+        "artifact_schemas",
+        "out_of_scope_v1",
+        "open_questions"
+      ],
       "schema": {
-        "version": {"type": "string", "example": "1.0"},
-        "product_name": {"type": "string"},
-        "scope": {"type": "string"},
-        "date": {"type": "string", "format": "YYYY-MM-DD"},
-        "produced_by": {"type": "string", "enum": ["PM"]},
-        "input_artifact": {"type": "string", "example": "brief-artifact.json"},
-        "status": {"type": "string", "enum": ["draft", "complete"]},
-        "pipeline_stages": {"type": "array", "items": {"type": "string"}, "minItems": 3},
+        "version": {
+          "type": "string",
+          "example": "1.0"
+        },
+        "product_name": {
+          "type": "string"
+        },
+        "scope": {
+          "type": "string"
+        },
+        "date": {
+          "type": "string",
+          "format": "YYYY-MM-DD"
+        },
+        "produced_by": {
+          "type": "string",
+          "enum": [
+            "PM"
+          ]
+        },
+        "input_artifact": {
+          "type": "string",
+          "example": "brief-artifact.json"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "draft",
+            "complete"
+          ]
+        },
+        "pipeline_stages": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 3
+        },
         "validation_spikes": {
           "type": "array",
           "items": {
-            "id": {"type": "string", "pattern": "SP-[0-9]+"},
-            "title": {"type": "string"},
-            "goal": {"type": "string"},
-            "done_when": {"type": "array", "items": {"type": "string"}, "minItems": 1},
-            "fail_criteria": {"type": "string"},
-            "effort": {"type": "string", "enum": ["S", "M", "L", "XL"]},
-            "blocks": {"type": "array", "items": {"type": "string"}}
+            "id": {
+              "type": "string",
+              "pattern": "SP-[0-9]+"
+            },
+            "title": {
+              "type": "string"
+            },
+            "goal": {
+              "type": "string"
+            },
+            "done_when": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "minItems": 1
+            },
+            "fail_criteria": {
+              "type": "string"
+            },
+            "effort": {
+              "type": "string",
+              "enum": [
+                "S",
+                "M",
+                "L",
+                "XL"
+              ]
+            },
+            "blocks": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
           }
         },
         "features": {
           "type": "array",
           "items": {
-            "id": {"type": "string", "pattern": "F-[0-9]+"},
-            "name": {"type": "string"},
-            "priority": {"type": "string", "enum": ["must", "should", "could"]},
-            "epic": {"type": "string"},
-            "user_stories": {"type": "array", "items": {"type": "string"}, "minItems": 1},
-            "acceptance_criteria": {"type": "array", "items": {"type": "string"}, "minItems": 3},
-            "artifact_schema": {"type": ["string", "null"]},
-            "functional_requirements": {"type": "array", "items": {"type": "string"}}
+            "id": {
+              "type": "string",
+              "pattern": "F-[0-9]+"
+            },
+            "name": {
+              "type": "string"
+            },
+            "priority": {
+              "type": "string",
+              "enum": [
+                "must",
+                "should",
+                "could"
+              ]
+            },
+            "epic": {
+              "type": "string"
+            },
+            "user_stories": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "minItems": 1
+            },
+            "acceptance_criteria": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "minItems": 3
+            },
+            "artifact_schema": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "functional_requirements": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
           },
           "minItems": 1
         },
-        "functional_requirements": {"type": "object"},
-        "non_functional_requirements": {"type": "object"},
-        "artifact_schemas": {"type": "object"},
-        "out_of_scope_v1": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+        "functional_requirements": {
+          "type": "object"
+        },
+        "non_functional_requirements": {
+          "type": "object"
+        },
+        "artifact_schemas": {
+          "type": "object"
+        },
+        "out_of_scope_v1": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        },
         "open_questions": {
           "type": "array",
           "items": {
-            "id": {"type": "string", "pattern": "OQ-[0-9]+"},
-            "question": {"type": "string"},
-            "owner": {"type": "string"},
-            "needed_by": {"type": "string"}
+            "id": {
+              "type": "string",
+              "pattern": "OQ-[0-9]+"
+            },
+            "question": {
+              "type": "string"
+            },
+            "owner": {
+              "type": "string"
+            },
+            "needed_by": {
+              "type": "string"
+            }
           }
         }
       }
     },
     "ArchitectureArtifact": {
       "description": "Produced by the Architect agent at the Architecture stage. Documents the selected tech stack, component design, and Architecture Decision Records (ADRs).",
-      "required_fields": ["version", "product_name", "scope", "date", "produced_by", "input_artifact", "status", "tech_stack", "components", "adrs", "deployment", "open_questions"],
+      "required_fields": [
+        "version",
+        "product_name",
+        "scope",
+        "date",
+        "produced_by",
+        "input_artifact",
+        "status",
+        "tech_stack",
+        "components",
+        "adrs",
+        "deployment",
+        "open_questions"
+      ],
       "schema": {
-        "version": {"type": "string"},
-        "product_name": {"type": "string"},
-        "scope": {"type": "string"},
-        "date": {"type": "string", "format": "YYYY-MM-DD"},
-        "produced_by": {"type": "string", "enum": ["Architect"]},
-        "input_artifact": {"type": "string", "example": "prd-artifact.json"},
-        "status": {"type": "string", "enum": ["draft", "complete"]},
+        "version": {
+          "type": "string"
+        },
+        "product_name": {
+          "type": "string"
+        },
+        "scope": {
+          "type": "string"
+        },
+        "date": {
+          "type": "string",
+          "format": "YYYY-MM-DD"
+        },
+        "produced_by": {
+          "type": "string",
+          "enum": [
+            "Architect"
+          ]
+        },
+        "input_artifact": {
+          "type": "string",
+          "example": "prd-artifact.json"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "draft",
+            "complete"
+          ]
+        },
         "tech_stack": {
           "type": "object",
           "properties": {
-            "runtime": {"type": "string"},
-            "language": {"type": "string"},
-            "acp_sdk": {"type": "string"},
-            "llm_provider": {"type": "string"},
-            "llm_models": {"type": "array", "items": {"type": "string"}},
-            "state_persistence": {"type": "string"},
-            "testing": {"type": "string"},
-            "package_manager": {"type": "string"}
+            "runtime": {
+              "type": "string"
+            },
+            "language": {
+              "type": "string"
+            },
+            "acp_sdk": {
+              "type": "string"
+            },
+            "llm_provider": {
+              "type": "string"
+            },
+            "llm_models": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "state_persistence": {
+              "type": "string"
+            },
+            "testing": {
+              "type": "string"
+            },
+            "package_manager": {
+              "type": "string"
+            }
           },
-          "required": ["runtime", "language", "acp_sdk", "llm_provider", "state_persistence"]
+          "required": [
+            "runtime",
+            "language",
+            "acp_sdk",
+            "llm_provider",
+            "state_persistence"
+          ]
         },
         "components": {
           "type": "array",
           "items": {
-            "id": {"type": "string", "pattern": "C-[0-9]+"},
-            "name": {"type": "string"},
-            "responsibility": {"type": "string"},
-            "interfaces": {"type": "array", "items": {"type": "string"}},
-            "dependencies": {"type": "array", "items": {"type": "string"}}
+            "id": {
+              "type": "string",
+              "pattern": "C-[0-9]+"
+            },
+            "name": {
+              "type": "string"
+            },
+            "responsibility": {
+              "type": "string"
+            },
+            "interfaces": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "dependencies": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
           },
           "minItems": 1
         },
         "adrs": {
           "type": "array",
           "items": {
-            "id": {"type": "string", "pattern": "ADR-[0-9]+"},
-            "title": {"type": "string"},
-            "status": {"type": "string", "enum": ["proposed", "accepted", "superseded", "deprecated"]},
-            "context": {"type": "string"},
-            "decision": {"type": "string"},
-            "consequences": {"type": "string"},
+            "id": {
+              "type": "string",
+              "pattern": "ADR-[0-9]+"
+            },
+            "title": {
+              "type": "string"
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "proposed",
+                "accepted",
+                "superseded",
+                "deprecated"
+              ]
+            },
+            "context": {
+              "type": "string"
+            },
+            "decision": {
+              "type": "string"
+            },
+            "consequences": {
+              "type": "string"
+            },
             "alternatives_rejected": {
               "type": "array",
               "items": {
-                "name": {"type": "string"},
-                "reason": {"type": "string"}
+                "name": {
+                  "type": "string"
+                },
+                "reason": {
+                  "type": "string"
+                }
               }
             }
           },
@@ -457,117 +949,571 @@
         "deployment": {
           "type": "object",
           "properties": {
-            "method": {"type": "string"},
-            "prerequisites": {"type": "array", "items": {"type": "string"}},
-            "install_command": {"type": "string"},
-            "env_vars_required": {"type": "array", "items": {"type": "string"}}
+            "method": {
+              "type": "string"
+            },
+            "prerequisites": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "install_command": {
+              "type": "string"
+            },
+            "env_vars_required": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
           },
-          "required": ["method", "install_command"]
+          "required": [
+            "method",
+            "install_command"
+          ]
         },
-        "open_questions": {"type": "array", "items": {"type": "string"}}
+        "open_questions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
       }
     },
     "SprintPlanArtifact": {
       "description": "Produced by the Scrum Master agent at the Development stage. Contains the sprint goal, story breakdown, estimates, and definition of done. Post-MVP (v2).",
-      "required_fields": ["version", "product_name", "scope", "sprint_number", "date", "produced_by", "input_artifact", "status", "sprint_goal", "duration_days", "stories", "dependencies", "definition_of_done"],
+      "required_fields": [
+        "version",
+        "product_name",
+        "scope",
+        "sprint_number",
+        "date",
+        "produced_by",
+        "input_artifact",
+        "status",
+        "sprint_goal",
+        "duration_days",
+        "stories",
+        "dependencies",
+        "definition_of_done"
+      ],
       "schema": {
-        "version": {"type": "string"},
-        "product_name": {"type": "string"},
-        "scope": {"type": "string"},
-        "sprint_number": {"type": "integer", "minimum": 1},
-        "date": {"type": "string", "format": "YYYY-MM-DD"},
-        "produced_by": {"type": "string", "enum": ["ScrumMaster"]},
-        "input_artifact": {"type": "string", "example": "architecture-artifact.json"},
-        "status": {"type": "string", "enum": ["draft", "active", "complete"]},
-        "sprint_goal": {"type": "string"},
-        "duration_days": {"type": "integer", "minimum": 1},
+        "version": {
+          "type": "string"
+        },
+        "product_name": {
+          "type": "string"
+        },
+        "scope": {
+          "type": "string"
+        },
+        "sprint_number": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "date": {
+          "type": "string",
+          "format": "YYYY-MM-DD"
+        },
+        "produced_by": {
+          "type": "string",
+          "enum": [
+            "ScrumMaster"
+          ]
+        },
+        "input_artifact": {
+          "type": "string",
+          "example": "architecture-artifact.json"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "draft",
+            "active",
+            "complete"
+          ]
+        },
+        "sprint_goal": {
+          "type": "string"
+        },
+        "duration_days": {
+          "type": "integer",
+          "minimum": 1
+        },
         "stories": {
           "type": "array",
           "items": {
-            "id": {"type": "string", "pattern": "US-[0-9]+"},
-            "title": {"type": "string"},
-            "estimate": {"type": "string", "enum": ["S", "M", "L", "XL"]},
-            "assignee": {"type": ["string", "null"]},
-            "status": {"type": "string", "enum": ["todo", "in_progress", "in_review", "done", "blocked"]},
-            "acceptance_criteria": {"type": "array", "items": {"type": "string"}},
-            "dependencies": {"type": "array", "items": {"type": "string"}}
+            "id": {
+              "type": "string",
+              "pattern": "US-[0-9]+"
+            },
+            "title": {
+              "type": "string"
+            },
+            "estimate": {
+              "type": "string",
+              "enum": [
+                "S",
+                "M",
+                "L",
+                "XL"
+              ]
+            },
+            "assignee": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "todo",
+                "in_progress",
+                "in_review",
+                "done",
+                "blocked"
+              ]
+            },
+            "acceptance_criteria": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "dependencies": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
           },
           "minItems": 1
         },
-        "dependencies": {"type": "array", "items": {"type": "string"}},
-        "definition_of_done": {"type": "array", "items": {"type": "string"}, "minItems": 1},
-        "velocity_story_points": {"type": ["number", "null"]}
+        "dependencies": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "definition_of_done": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        },
+        "velocity_story_points": {
+          "type": [
+            "number",
+            "null"
+          ]
+        }
       }
     },
     "CodeReviewArtifact": {
       "description": "Produced by the Code Reviewer agent at the Review stage. Contains a structured list of findings with severity, file/line references, and an overall approval decision.",
-      "required_fields": ["version", "product_name", "scope", "date", "produced_by", "pr_ref", "status", "summary", "issues", "approval"],
+      "required_fields": [
+        "version",
+        "product_name",
+        "scope",
+        "date",
+        "produced_by",
+        "pr_ref",
+        "status",
+        "summary",
+        "issues",
+        "approval"
+      ],
       "schema": {
-        "version": {"type": "string"},
-        "product_name": {"type": "string"},
-        "scope": {"type": "string"},
-        "date": {"type": "string", "format": "YYYY-MM-DD"},
-        "produced_by": {"type": "string", "enum": ["CodeReviewer"]},
-        "pr_ref": {"type": "string", "description": "PR URL or branch reference"},
-        "status": {"type": "string", "enum": ["draft", "complete"]},
+        "version": {
+          "type": "string"
+        },
+        "product_name": {
+          "type": "string"
+        },
+        "scope": {
+          "type": "string"
+        },
+        "date": {
+          "type": "string",
+          "format": "YYYY-MM-DD"
+        },
+        "produced_by": {
+          "type": "string",
+          "enum": [
+            "CodeReviewer"
+          ]
+        },
+        "pr_ref": {
+          "type": "string",
+          "description": "PR URL or branch reference"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "draft",
+            "complete"
+          ]
+        },
         "summary": {
           "type": "object",
           "properties": {
-            "total_issues": {"type": "integer", "minimum": 0},
-            "critical": {"type": "integer", "minimum": 0},
-            "high": {"type": "integer", "minimum": 0},
-            "medium": {"type": "integer", "minimum": 0},
-            "low": {"type": "integer", "minimum": 0},
-            "files_reviewed": {"type": "integer", "minimum": 0}
+            "total_issues": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "critical": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "high": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "medium": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "low": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "files_reviewed": {
+              "type": "integer",
+              "minimum": 0
+            }
           },
-          "required": ["total_issues", "critical", "high", "medium", "low"]
+          "required": [
+            "total_issues",
+            "critical",
+            "high",
+            "medium",
+            "low"
+          ]
         },
         "issues": {
           "type": "array",
           "items": {
-            "id": {"type": "string", "pattern": "CR-[0-9]+"},
-            "severity": {"type": "string", "enum": ["critical", "high", "medium", "low"]},
-            "category": {"type": "string", "enum": ["security", "correctness", "performance", "maintainability", "style"]},
-            "file": {"type": "string"},
-            "line": {"type": ["integer", "null"]},
-            "description": {"type": "string"},
-            "recommendation": {"type": "string"},
-            "fixed": {"type": "boolean", "default": false}
+            "id": {
+              "type": "string",
+              "pattern": "CR-[0-9]+"
+            },
+            "severity": {
+              "type": "string",
+              "enum": [
+                "critical",
+                "high",
+                "medium",
+                "low"
+              ]
+            },
+            "category": {
+              "type": "string",
+              "enum": [
+                "security",
+                "correctness",
+                "performance",
+                "maintainability",
+                "style"
+              ]
+            },
+            "file": {
+              "type": "string"
+            },
+            "line": {
+              "type": [
+                "integer",
+                "null"
+              ]
+            },
+            "description": {
+              "type": "string"
+            },
+            "recommendation": {
+              "type": "string"
+            },
+            "fixed": {
+              "type": "boolean",
+              "default": false
+            }
           }
         },
         "approval": {
           "type": "string",
-          "enum": ["approved", "approved_with_comments", "request_changes"]
+          "enum": [
+            "approved",
+            "approved_with_comments",
+            "request_changes"
+          ]
         },
-        "notes": {"type": ["string", "null"]}
+        "notes": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "PrdCoreArtifact": {
+      "description": "Produced by the first of two sequential Gemini structured-output calls in the Planning stage. Contains scalar and simple-array fields only. Designed to stay well below the ~1200 output-token Gemini structured-output ceiling.",
+      "required_fields": [
+        "version",
+        "product_name",
+        "scope",
+        "date",
+        "produced_by",
+        "input_artifact",
+        "status",
+        "problem_statement",
+        "goals",
+        "non_goals",
+        "constraints",
+        "success_metrics",
+        "target_audience",
+        "timeline_weeks"
+      ],
+      "schema": {
+        "version": {
+          "type": "string",
+          "example": "1.0"
+        },
+        "product_name": {
+          "type": "string"
+        },
+        "scope": {
+          "type": "string",
+          "example": "v1"
+        },
+        "date": {
+          "type": "string",
+          "format": "YYYY-MM-DD"
+        },
+        "produced_by": {
+          "type": "string",
+          "enum": [
+            "PM"
+          ]
+        },
+        "input_artifact": {
+          "type": "string",
+          "example": "brief-artifact.json"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "draft",
+            "complete"
+          ]
+        },
+        "problem_statement": {
+          "type": "string"
+        },
+        "goals": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        },
+        "non_goals": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "constraints": {
+          "type": "object",
+          "properties": {
+            "technical": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "business": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "compliance": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "technical",
+            "business",
+            "compliance"
+          ]
+        },
+        "success_metrics": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        },
+        "target_audience": {
+          "type": "string"
+        },
+        "timeline_weeks": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "PrdStoriesArtifact": {
+      "description": "Produced by the second of two sequential Gemini structured-output calls in the Planning stage. Contains epics and user stories with Gherkin acceptance criteria. Designed to stay well below the ~1200 output-token Gemini structured-output ceiling.",
+      "required_fields": [
+        "version",
+        "product_name",
+        "scope",
+        "epics",
+        "user_stories"
+      ],
+      "schema": {
+        "version": {
+          "type": "string",
+          "example": "1.0"
+        },
+        "product_name": {
+          "type": "string"
+        },
+        "scope": {
+          "type": "string"
+        },
+        "epics": {
+          "type": "array",
+          "items": {
+            "id": {
+              "type": "string",
+              "pattern": "EP-[0-9]+"
+            },
+            "title": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            }
+          },
+          "minItems": 1
+        },
+        "user_stories": {
+          "type": "array",
+          "items": {
+            "id": {
+              "type": "string",
+              "pattern": "US-[0-9]+"
+            },
+            "title": {
+              "type": "string"
+            },
+            "epic_id": {
+              "type": "string",
+              "pattern": "EP-[0-9]+"
+            },
+            "estimate": {
+              "type": "string",
+              "enum": [
+                "S",
+                "M",
+                "L",
+                "XL"
+              ]
+            },
+            "acceptance_criteria": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "minItems": 1
+            }
+          },
+          "minItems": 1
+        }
       }
     }
   },
   "out_of_scope_v1": [
-    "Deploy stage — deferred to v2",
-    "Observability stage (OTel traces) — deferred to v2",
-    "Agent Memory (vector search) — deferred to v2",
-    "Transversal agents beyond Code Reviewer (Tech Writer, Data Engineer, UX Designer) — deferred to v2",
-    "Multi-LLM support — only Anthropic API in v1",
-    "Brownfield / existing-codebase analysis — requires repo scanning; separate spike needed",
-    "Rich artefact UI (web rendering, rich editor) — plain markdown covers MVP needs",
-    "Billing / per-token metering — user provides own API key",
-    "Multi-tenant / team API key management — single-tenant assumption for MVP",
-    "Automated sprint planning from PRD — requires deeper Multica board integration",
-    "BMad Developer and QA agent stages — Analyst/PM/Architect pipeline must be validated first",
-    "Custom approval keywords — LGTM / approve covers MVP",
-    "Slack / email notifications — Multica issue comments are sufficient for MVP"
+    "Deploy stage \u2014 deferred to v2",
+    "Observability stage (OTel traces) \u2014 deferred to v2",
+    "Agent Memory (vector search) \u2014 deferred to v2",
+    "Transversal agents beyond Code Reviewer (Tech Writer, Data Engineer, UX Designer) \u2014 deferred to v2",
+    "Multi-LLM support \u2014 only Anthropic API in v1",
+    "Brownfield / existing-codebase analysis \u2014 requires repo scanning; separate spike needed",
+    "Rich artefact UI (web rendering, rich editor) \u2014 plain markdown covers MVP needs",
+    "Billing / per-token metering \u2014 user provides own API key",
+    "Multi-tenant / team API key management \u2014 single-tenant assumption for MVP",
+    "Automated sprint planning from PRD \u2014 requires deeper Multica board integration",
+    "BMad Developer and QA agent stages \u2014 Analyst/PM/Architect pipeline must be validated first",
+    "Custom approval keywords \u2014 LGTM / approve covers MVP",
+    "Slack / email notifications \u2014 Multica issue comments are sufficient for MVP"
   ],
   "open_questions": [
-    {"id": "OQ-01", "question": "What exact Multica daemon registration API does an ACP agent use? Is there a published endpoint spec or only convention?", "owner": "Architect (post SP-01)", "needed_by": "Before EP-03"},
-    {"id": "OQ-02", "question": "Does multica agent add support a registry / npm-install flow, or does the binary need to be on PATH manually?", "owner": "Engineering (spike SP-01)", "needed_by": "Before US-08"},
-    {"id": "OQ-03", "question": "What is the approval comment syntax? Should Ensi support natural language approval detection or a strict keyword?", "owner": "Product / Ana persona", "needed_by": "Before US-04 implementation"},
-    {"id": "OQ-04", "question": "Should the human approval gate be skippable via a config option (e.g., ENSI_AUTO_ADVANCE=true) for automated pipelines?", "owner": "Product", "needed_by": "Before US-04 implementation"},
-    {"id": "OQ-05", "question": "Is .ensi/state.json safe to commit to a public repo, or should state be gitignored by default?", "owner": "Architect", "needed_by": "Before US-07 implementation"},
-    {"id": "OQ-06", "question": "What is the Multica daemon's behaviour when an ACP agent is unreachable — retry, surface error, or drop?", "owner": "Architect (post SP-01)", "needed_by": "Before EP-03"},
-    {"id": "OQ-07", "question": "Are there rate limits on multica issue comment add that could affect stage progress updates during long-running LLM calls?", "owner": "Engineering", "needed_by": "Before EP-04"},
-    {"id": "OQ-08", "question": "Should the 72-hour approval timeout be configurable per workspace, per project, or global?", "owner": "Product", "needed_by": "Before US-04 implementation"},
-    {"id": "OQ-09", "question": "How much prompt adaptation is required to port BMad prompts to work with Anthropic API for general greenfield projects without IDE context?", "owner": "Engineering (spike SP-02)", "needed_by": "Before EP-04"},
-    {"id": "OQ-10", "question": "Does the Architect stage need access to the project's existing repo (git history, package.json) for greenfield, or is the PRD sufficient?", "owner": "Architect", "needed_by": "Before EP-06"}
+    {
+      "id": "OQ-01",
+      "question": "What exact Multica daemon registration API does an ACP agent use? Is there a published endpoint spec or only convention?",
+      "owner": "Architect (post SP-01)",
+      "needed_by": "Before EP-03"
+    },
+    {
+      "id": "OQ-02",
+      "question": "Does multica agent add support a registry / npm-install flow, or does the binary need to be on PATH manually?",
+      "owner": "Engineering (spike SP-01)",
+      "needed_by": "Before US-08"
+    },
+    {
+      "id": "OQ-03",
+      "question": "What is the approval comment syntax? Should Ensi support natural language approval detection or a strict keyword?",
+      "owner": "Product / Ana persona",
+      "needed_by": "Before US-04 implementation"
+    },
+    {
+      "id": "OQ-04",
+      "question": "Should the human approval gate be skippable via a config option (e.g., ENSI_AUTO_ADVANCE=true) for automated pipelines?",
+      "owner": "Product",
+      "needed_by": "Before US-04 implementation"
+    },
+    {
+      "id": "OQ-05",
+      "question": "Is .ensi/state.json safe to commit to a public repo, or should state be gitignored by default?",
+      "owner": "Architect",
+      "needed_by": "Before US-07 implementation"
+    },
+    {
+      "id": "OQ-06",
+      "question": "What is the Multica daemon's behaviour when an ACP agent is unreachable \u2014 retry, surface error, or drop?",
+      "owner": "Architect (post SP-01)",
+      "needed_by": "Before EP-03"
+    },
+    {
+      "id": "OQ-07",
+      "question": "Are there rate limits on multica issue comment add that could affect stage progress updates during long-running LLM calls?",
+      "owner": "Engineering",
+      "needed_by": "Before EP-04"
+    },
+    {
+      "id": "OQ-08",
+      "question": "Should the 72-hour approval timeout be configurable per workspace, per project, or global?",
+      "owner": "Product",
+      "needed_by": "Before US-04 implementation"
+    },
+    {
+      "id": "OQ-09",
+      "question": "How much prompt adaptation is required to port BMad prompts to work with Anthropic API for general greenfield projects without IDE context?",
+      "owner": "Engineering (spike SP-02)",
+      "needed_by": "Before EP-04"
+    },
+    {
+      "id": "OQ-10",
+      "question": "Does the Architect stage need access to the project's existing repo (git history, package.json) for greenfield, or is the PRD sufficient?",
+      "owner": "Architect",
+      "needed_by": "Before EP-06"
+    }
   ]
 }
