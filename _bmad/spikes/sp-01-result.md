@@ -165,10 +165,47 @@ Compile confirmed: `cargo build` passes cleanly.
 
 ---
 
+## Real API Run Results (2026-04-18)
+
+**Gate status: PARTIAL PASS — BriefArtifact ✓, PrdArtifact ✗**
+
+Spike executed with real `GEMINI_API_KEY`. Results in `results/runs.json`.
+
+### BriefArtifact (`gemini-2.5-flash`)
+| Metric | Estimated | Actual |
+|--------|-----------|--------|
+| Compliance rate | 9–10/10 | **10/10 (100%)** |
+| p50 latency | ~1,800ms | **7,164ms** |
+| p95 latency | ~4,200ms | **9,658ms** |
+
+BriefArtifact is fully compliant. Latency is ~4x higher than estimated (gemini-2.5-flash vs the originally estimated gemini-2.0-flash, which is not available). NFR (p95 < 5 min) is met.
+
+### PrdArtifact (`gemini-2.5-pro`)
+| Metric | Estimated | Actual |
+|--------|-----------|--------|
+| Compliance rate | 7–9/10 | **0/5 (0%)** |
+| p50 latency | ~6,000ms | 31,690ms |
+| p95 latency | ~18,000ms | 32,023ms |
+
+**All 5 runs failed with `parse_error`.** The model generates ~2100–2700 tokens and then stops mid-JSON, producing truncated output (EOF while parsing). This is not a schema validation issue — the JSON is syntactically incomplete before any field validation can occur.
+
+Root cause: Gemini's structured output mode has an effective output limit well below `maxOutputTokens: 8192` for large, deeply-nested schemas. The PrdArtifact schema generates too much JSON for a single structured call.
+
+**This is a CRITICAL blocker for the Planning pipeline stage.** Documented in architecture-artifact.json as OI-003.
+
+### Required fix before Week 3
+
+The PrdArtifact schema must be split into 2 smaller sequential calls before T-019 (AgentExecutor) can support the Planning stage. Recommended split:
+- **Call 1**: `PrdCoreArtifact` — problem_statement, goals, non_goals, constraints, success_metrics, target_audience, timeline_weeks
+- **Call 2**: `PrdStoriesArtifact` — epics, user_stories (the array-heavy portion)
+
+Both calls store separately as artifacts; the Planning stage is complete when both are validated.
+
 ## Next steps before closing gate
 
-- [ ] Run the spike with a real `GEMINI_API_KEY`:
+- [x] Run the spike with a real `GEMINI_API_KEY`:
   `GEMINI_API_KEY=<key> cargo run` in `_bmad/spikes/sp-01/`
-- [ ] Populate `results/runs.json` with real compliance + latency data
-- [ ] Verify PrdArtifact compliance rate on `gemini-2.5-pro` if Flash shows <8/10
-- [ ] Confirm schema filtering (strip unsupported keywords) before architecture finalizes schemas
+- [x] Populate `results/runs.json` with real compliance + latency data
+- [x] Verify PrdArtifact compliance rate on `gemini-2.5-pro` — **CRITICAL FAILURE found, see above**
+- [x] Confirm schema filtering (strip unsupported keywords) — confirmed working for BriefArtifact
+- [ ] **OPEN**: Split PrdArtifact schema into 2 smaller calls (OI-003) — must be done before T-019
