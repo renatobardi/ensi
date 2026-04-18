@@ -1,0 +1,424 @@
+{
+  "version": "1.0",
+  "product_name": "Ensi",
+  "scope": "v1",
+  "total_weeks": 8,
+  "open_items": [
+    {
+      "id": "OI-001",
+      "description": "Validar métricas reais Gemini API com GEMINI_API_KEY antes do Week 3 — p50 ~1800ms e p95 ~4200ms são estimativas de dry runs sem API key real",
+      "owner": "Backend Dev",
+      "deadline": "end of Week 2"
+    },
+    {
+      "id": "OI-002",
+      "description": "SprintPlanArtifact e CodeReviewArtifact schemas não definidos no prd-artifact.json — SM define SprintPlanArtifact neste documento; CodeReviewArtifact deve ser definido pelo Dev antes do stage Review",
+      "owner": "Backend Dev",
+      "deadline": "end of Week 6"
+    }
+  ],
+  "weeks": [
+    {
+      "week": 1,
+      "theme": "Foundation — Cargo Workspace, ensi-core Domain, ensi-db Schema",
+      "tasks": [
+        {
+          "id": "T-001",
+          "title": "Cargo workspace scaffold + CI",
+          "description": "Inicializar Cargo workspace com 8 crates (ensi-core, ensi-db, ensi-events, ensi-pipeline, ensi-server, ensi-daemon, ensi-frontend, ensi-cli). Configurar GitHub Actions (cargo check, cargo test, cargo clippy). Workspace compila sem erros.",
+          "crate": "workspace",
+          "estimate_days": 1,
+          "depends_on": [],
+          "assignee_persona": "Fullstack Dev",
+          "risk": "low"
+        },
+        {
+          "id": "T-002",
+          "title": "ensi-core: entidades de domínio",
+          "description": "Definir structs Rust para todas as entidades: Workspace, Member, Agent, Project, Issue, PipelineState, Task, TaskMessage, Artifact, Comment, PAT, DaemonToken. Seguir naming snake_case. Sem I/O, sem frameworks — apenas tipos puros e error types (thiserror).",
+          "crate": "ensi-core",
+          "estimate_days": 2,
+          "depends_on": ["T-001"],
+          "assignee_persona": "Backend Dev",
+          "risk": "low"
+        },
+        {
+          "id": "T-003",
+          "title": "ensi-core: port traits (hexagonal inner layer)",
+          "description": "Definir traits async: IssueRepository, ProjectRepository, WorkspaceRepository, MemberRepository, AgentRepository, TaskRepository, ArtifactRepository, PipelineRepository, EventPublisher, AgentExecutor, ArtifactStore. Todos com Result<_, CoreError>.",
+          "crate": "ensi-core",
+          "estimate_days": 1,
+          "depends_on": ["T-002"],
+          "assignee_persona": "Backend Dev",
+          "risk": "low"
+        },
+        {
+          "id": "T-004",
+          "title": "ensi-db: SurrealDB 3.0 embedded init + SCHEMAFULL schema",
+          "description": "Inicializar SurrealDB 3.0 em modo embedded (~/ensi_data/). Definir SCHEMAFULL schema para as 12 tabelas: workspace, member, agent, project, issue, pipeline_state, task, task_message, artifact, comment, pat, daemon_token. Verificar startup sem erros. DB health check no boot.",
+          "crate": "ensi-db",
+          "estimate_days": 2,
+          "depends_on": ["T-003"],
+          "assignee_persona": "Backend Dev",
+          "risk": "medium"
+        }
+      ]
+    },
+    {
+      "week": 2,
+      "theme": "Foundation — NATS, Auth, Axum Base, OI-001 Validation",
+      "tasks": [
+        {
+          "id": "T-005",
+          "title": "ensi-events: NATS JetStream embedded + EventPublisher adapter",
+          "description": "Inicializar NATS JetStream em modo embedded. Definir hierarquia de subjects: ensi.task.created, ensi.task.{task_id}.message, ensi.task.{task_id}.completed, ensi.task.{task_id}.failed, ensi.pipeline.{issue_id}.transition, ensi.issue.{issue_id}.updated. Implementar EventPublisher trait.",
+          "crate": "ensi-events",
+          "estimate_days": 1,
+          "depends_on": ["T-003"],
+          "assignee_persona": "Backend Dev",
+          "risk": "medium"
+        },
+        {
+          "id": "T-006",
+          "title": "ensi-server: Axum 0.8 base + auth middleware (JWT/PAT/DaemonToken)",
+          "description": "Setup Axum 0.8 com AppState (db, events, config). Graceful shutdown. Middleware de autenticação: extrai Bearer token, detecta tipo (JWT HS256, PAT ens_*, DaemonToken edt_*), resolve identidade, anexa a request extensions. JWT exp 24h, PAT bcrypt, DaemonToken exp task TTL+1h.",
+          "crate": "ensi-server",
+          "estimate_days": 2,
+          "depends_on": ["T-004", "T-005"],
+          "assignee_persona": "Backend Dev",
+          "risk": "low"
+        },
+        {
+          "id": "T-007",
+          "title": "ensi-server: endpoints de auth (/auth/login, /auth/me, /auth/pat)",
+          "description": "Implementar: POST /auth/login (email+password → JWT), GET /auth/me (identidade autenticada), POST /auth/pat (criar PAT ens_*), GET /auth/pat (listar PATs), DELETE /auth/pat/:id (revogar). PAT stored como bcrypt hash.",
+          "crate": "ensi-server",
+          "estimate_days": 1,
+          "depends_on": ["T-006"],
+          "assignee_persona": "Backend Dev",
+          "risk": "low"
+        },
+        {
+          "id": "T-008",
+          "title": "OI-001 — Validar métricas reais Gemini API (GEMINI_API_KEY) — BLOCKING para Week 3",
+          "description": "BLOCKER CRÍTICO: Executar spike SP-01 com GEMINI_API_KEY real. Testar gemini-2.0-flash (Discovery/Development/Review) e gemini-2.5-pro (Planning/Architecture) em todos os 5 stages. Medir p50/p95 latência e qualidade de structured output. Se problemas encontrados: avaliar fallbacks (gemini-1.5-pro, prompt adjustment, schema simplification). RESULTADO OBRIGATÓRIO antes do fim da Week 2 — se falhar, paralysa toda Week 3 (T-009 a T-012 não iniciam até resolução ou escalation). Atualizar architecture-artifact.json com métricas e recomendações reais.",
+          "crate": "ensi-daemon",
+          "estimate_days": 2,
+          "depends_on": ["T-001"],
+          "assignee_persona": "Backend Dev",
+          "risk": "critical"
+        }
+      ]
+    },
+    {
+      "week": 3,
+      "theme": "Core — ensi-db Adapters + Workspace/Agent/Project APIs",
+      "tasks": [
+        {
+          "id": "T-009",
+          "title": "ensi-db: adapters IssueRepository, ProjectRepository, WorkspaceRepository, MemberRepository",
+          "description": "Implementar os 4 adapters SurrealDB. CRUD completo com SurrealDB queries typed. Filtros em IssueRepository: status, priority, assignee, limit/offset (pagination: total + has_more). Indexes respeitados. Tests de integração para cada adapter.",
+          "crate": "ensi-db",
+          "estimate_days": 2,
+          "depends_on": ["T-004", "T-008"],
+          "assignee_persona": "Backend Dev",
+          "risk": "low"
+        },
+        {
+          "id": "T-010",
+          "title": "ensi-db: adapters AgentRepository, TaskRepository, ArtifactRepository, PipelineRepository",
+          "description": "Implementar os 4 adapters restantes. ArtifactRepository: salvar/recuperar data (object field) sem overhead de serialização. PipelineRepository: update atômico de stage + stage_status + retry_count. TaskRepository: filtro por status para daemon polling.",
+          "crate": "ensi-db",
+          "estimate_days": 2,
+          "depends_on": ["T-009"],
+          "assignee_persona": "Backend Dev",
+          "risk": "low"
+        },
+        {
+          "id": "T-011",
+          "title": "ensi-server: Workspace, Member, Project REST endpoints",
+          "description": "Implementar: GET/POST /workspaces, GET /workspaces/:id, GET/POST /workspaces/:id/members, POST /workspaces/:id/members/invite, GET/POST /workspaces/:id/projects, GET /projects/:id. Response format: JSON com pagination wrapper onde aplicável.",
+          "crate": "ensi-server",
+          "estimate_days": 1,
+          "depends_on": ["T-007", "T-009", "T-008"],
+          "assignee_persona": "Backend Dev",
+          "risk": "low"
+        },
+        {
+          "id": "T-012",
+          "title": "ensi-server: Agent REST endpoints",
+          "description": "Implementar: GET/POST /workspaces/:id/agents, GET /agents/:id, PATCH /agents/:id. Agent slug unique por workspace (UNIQUE idx_agent_ws_slug). Error format padronizado: {error: {code, message, details}}.",
+          "crate": "ensi-server",
+          "estimate_days": 1,
+          "depends_on": ["T-011"],
+          "assignee_persona": "Backend Dev",
+          "risk": "low"
+        }
+      ]
+    },
+    {
+      "week": 4,
+      "theme": "Core — Issues API, Comments, Daemon Bootstrap, Frontend Scaffold",
+      "tasks": [
+        {
+          "id": "T-013",
+          "title": "ensi-server: Issue CRUD + Comment endpoints",
+          "description": "Implementar: GET/POST /projects/:id/issues (com filtros status/priority/assignee/limit/offset e response total+has_more), GET/PATCH/DELETE /issues/:id, GET/POST /issues/:id/comments, DELETE /comments/:id. issue.number auto-incrementado via project.issue_counter.",
+          "crate": "ensi-server",
+          "estimate_days": 2,
+          "depends_on": ["T-010", "T-012"],
+          "assignee_persona": "Backend Dev",
+          "risk": "low"
+        },
+        {
+          "id": "T-014",
+          "title": "ensi-daemon: task poller + execenv lifecycle",
+          "description": "Implementar subscriber NATS ensi.task.created. Para cada task: criar execenv em ~/ensi_workspaces/{ws_id}/{task_id}/, injetar context files (AGENT.md com persona, ISSUE.md com título/desc/comments, PIPELINE.md com state e artifact summaries, REPOS.md com repo paths). Polling interval 3000ms. Cleanup do execenv após conclusão.",
+          "crate": "ensi-daemon",
+          "estimate_days": 2,
+          "depends_on": ["T-008", "T-013"],
+          "assignee_persona": "Backend Dev",
+          "risk": "medium"
+        },
+        {
+          "id": "T-015",
+          "title": "ensi-frontend: Leptos 0.7 SSR + WASM scaffold",
+          "description": "Configurar trunk build com Axum-hosted Leptos SSR + WASM hydration. TailwindCSS via trunk/leptos-style. leptos_router com rotas: /, /login, /workspaces/:id, /projects/:id, /issues/:id. Login page funcional (POST /auth/login → JWT armazenado). WASM budget: verificar < 500 KB gzipped no build.",
+          "crate": "ensi-frontend",
+          "estimate_days": 3,
+          "depends_on": ["T-007"],
+          "assignee_persona": "Frontend Dev",
+          "risk": "medium"
+        }
+      ]
+    },
+    {
+      "week": 5,
+      "theme": "Pipeline — FSM, WebSocket Hub, Issue Board, Artifact Endpoints",
+      "tasks": [
+        {
+          "id": "T-016",
+          "title": "ensi-pipeline: FSM + artifact validation",
+          "description": "Implementar Pipeline FSM: estados (Idle, Discovery, Planning, Architecture, Development, Review, Blocked, Complete), transições com guards (artifact schema-valid, retry_count < 3), eventos (pipeline_started, artifact_validated, max_retries_exceeded, retry_reset). FSM chama AgentExecutor via trait. FSM só vê sucesso ou max_retries_exceeded — retry loop encapsulado no AgentExecutor.",
+          "crate": "ensi-pipeline",
+          "estimate_days": 3,
+          "depends_on": ["T-010", "T-014"],
+          "assignee_persona": "Backend Dev",
+          "risk": "high"
+        },
+        {
+          "id": "T-017",
+          "title": "ensi-server: WebSocket hub + pipeline/task REST endpoints",
+          "description": "WebSocket hub em /ws: broadcast de task.started, task.message, task.completed, task.failed, pipeline.transition, issue.updated. Endpoints: GET /issues/:id/pipeline, POST /issues/:id/pipeline/start, POST /issues/:id/pipeline/unblock, GET /issues/:id/tasks, GET /tasks/:id, GET /tasks/:id/messages (params: limit, since_seq), GET/GET /issues/:id/artifacts, GET /artifacts/:id.",
+          "crate": "ensi-server",
+          "estimate_days": 2,
+          "depends_on": ["T-013", "T-016"],
+          "assignee_persona": "Backend Dev",
+          "risk": "medium"
+        },
+        {
+          "id": "T-018",
+          "title": "ensi-frontend: Issue Board (click-to-move) com WebSocket",
+          "description": "Issue Board com 5 colunas (todo, in_progress, in_review, done, blocked). Click em issue → dropdown para mover de coluna (ADR-005: sem DnD). WebSocket resource Leptos para live updates (issue.updated → refresh card). Leptos signals para state management. Borrow-checker: clone-before-capture em closures.",
+          "crate": "ensi-frontend",
+          "estimate_days": 3,
+          "depends_on": ["T-015", "T-017"],
+          "assignee_persona": "Frontend Dev",
+          "risk": "medium"
+        }
+      ]
+    },
+    {
+      "week": 6,
+      "theme": "BMad — AgentExecutor (Gemini), Daemon Tokens, Pipeline View, CLI",
+      "tasks": [
+        {
+          "id": "T-019",
+          "title": "ensi-daemon: AgentExecutor — Gemini API calls + retry loop",
+          "description": "Implementar AgentExecutor trait: model_for_stage() → gemini-2.0-flash (Discovery/Development/Review) ou gemini-2.5-pro (Planning/Architecture). execute(): schema preprocessing (strip additionalProperties, $ref, oneOf, anyOf), chamada Gemini structured output, validação JSON Schema, retry loop max 3 com error injection (validation_error no prompt). NATS publish de task.message por stream. NFR: p95 < 5min por stage.",
+          "crate": "ensi-daemon",
+          "estimate_days": 3,
+          "depends_on": ["T-016", "T-008"],
+          "assignee_persona": "Backend Dev",
+          "risk": "high"
+        },
+        {
+          "id": "T-020",
+          "title": "ensi-daemon: DaemonToken lifecycle + daemon REST endpoints",
+          "description": "Emitir edt_* token por task (exp = task TTL + 1h, stored como hash em daemon_token table). Integrar daemon endpoints: POST /daemon/tasks/:id/messages (append task_message + NATS publish), PUT /daemon/tasks/:id/status (completed|failed → update task + publish), POST /daemon/tasks/:id/artifacts (submit artifact validado + trigger pipeline transition). Auth: DaemonToken middleware.",
+          "crate": "ensi-daemon",
+          "estimate_days": 1,
+          "depends_on": ["T-019", "T-017"],
+          "assignee_persona": "Backend Dev",
+          "risk": "low"
+        },
+        {
+          "id": "T-021",
+          "title": "ensi-frontend: Pipeline View + Issue Detail + Task Feed",
+          "description": "Pipeline View: 5 stage cards com status indicators (pending/running/done/failed/blocked) e pipeline.transition via WebSocket. Artifact Inspector panel: renderizar JSON blob do artifact (BriefArtifact, PrdArtifact, ArchitectureArtifact, SprintPlanArtifact) em formato legível. Issue Detail: task feed com mensagens live (role-based: assistant/tool_use/tool_result/system) via WebSocket task.message.",
+          "crate": "ensi-frontend",
+          "estimate_days": 3,
+          "depends_on": ["T-018", "T-020"],
+          "assignee_persona": "Frontend Dev",
+          "risk": "medium"
+        },
+        {
+          "id": "T-022",
+          "title": "ensi-cli: comandos de workspace, issue, pipeline e PAT",
+          "description": "Implementar CLI com clap: workspace (create, list), project (create, list), issue (create, list, get, update, delete), pipeline (start, unblock, status), pat (create, list, revoke). Output: JSON ou table (flag --output). Autenticação via PAT env var ENSI_TOKEN. Binary: ensi.",
+          "crate": "ensi-cli",
+          "estimate_days": 2,
+          "depends_on": ["T-013", "T-017"],
+          "assignee_persona": "Fullstack Dev",
+          "risk": "low"
+        }
+      ]
+    },
+    {
+      "week": 7,
+      "theme": "Polish — OI-001 Validation, Error Handling, Task Feed UI, Integration Tests",
+      "tasks": [
+        {
+          "id": "T-023",
+          "title": "OI-001 — Validação end-to-end do pipeline completo",
+          "description": "Rodar pipeline Discovery→Planning→Architecture→Development→Review com GEMINI_API_KEY real e issue representativo. Medir p95 por stage e pipeline total. Verificar NFR-01 (p95 < 5min para Analyst) e NFR-02 (p95 < 20min pipeline completo). Documentar resultados. Se NFR violado: escalar para ajuste de modelo ou schema simplification.",
+          "crate": "ensi-daemon",
+          "estimate_days": 1,
+          "depends_on": ["T-019", "T-020", "T-021"],
+          "assignee_persona": "Backend Dev",
+          "risk": "medium"
+        },
+        {
+          "id": "T-024",
+          "title": "Error handling hardening + Blocked state UI",
+          "description": "Respostas de erro estruturadas em todos os endpoints (código + message + details). AgentExecutor: exponential backoff para erros transientes Gemini (NFR-06: máx 3 retries). Pipeline Blocked: comment automático na issue explicando falha. Frontend: exibir estado Blocked com motivo no Pipeline View. Garantir que API keys nunca aparecem em logs (NFR-07).",
+          "crate": "ensi-server",
+          "estimate_days": 2,
+          "depends_on": ["T-023"],
+          "assignee_persona": "Backend Dev",
+          "risk": "low"
+        },
+        {
+          "id": "T-025",
+          "title": "ensi-frontend: Agent Task Feed view completo",
+          "description": "View dedicada para feed de mensagens de uma task (role-based coloring: assistant=azul, tool_use=laranja, tool_result=verde, system=cinza). Polling incremental via GET /tasks/:id/messages?since_seq=N. Auto-scroll em novo message. Indicador de status (running/completed/failed) com timestamp.",
+          "crate": "ensi-frontend",
+          "estimate_days": 2,
+          "depends_on": ["T-021"],
+          "assignee_persona": "Frontend Dev",
+          "risk": "low"
+        },
+        {
+          "id": "T-026",
+          "title": "Suite de testes de integração",
+          "description": "Pipeline FSM: testes unitários para todas as transições e guards. SurrealDB adapters: testes de integração com DB embedded (round-trips CRUD). Axum endpoints: testes de integração com TestClient (auth, CRUD, error codes). WASM budget: asserção automática no CI que gzipped WASM < 500 KB.",
+          "crate": "workspace",
+          "estimate_days": 2,
+          "depends_on": ["T-024"],
+          "assignee_persona": "Fullstack Dev",
+          "risk": "medium"
+        }
+      ]
+    },
+    {
+      "week": 8,
+      "theme": "Ship — Security, Single Binary, Docs, Release",
+      "tasks": [
+        {
+          "id": "T-027",
+          "title": "Security audit",
+          "description": "Verificar: JWT secret rotation documentado, PAT bcrypt verification testado, DaemonToken expiry enforcement com test, API keys nunca em logs/artefacts (grep no codebase), nenhum PII em artefatos além do input do usuário (NFR-08), sem telemetria third-party (NFR-09). Corrigir achados antes do release.",
+          "crate": "workspace",
+          "estimate_days": 1,
+          "depends_on": ["T-026"],
+          "assignee_persona": "Backend Dev",
+          "risk": "low"
+        },
+        {
+          "id": "T-028",
+          "title": "Single binary validation + release build",
+          "description": "cargo build --release para macOS (aarch64 + x86_64) e Linux (x86_64). Verificar: SurrealDB embedded init sem process externo, NATS embedded init, Leptos SSR servido do mesmo binário, CLI incluso. Medir startup time < 3s. Smoke test: login → criar workspace → criar projeto → criar issue → start pipeline.",
+          "crate": "workspace",
+          "estimate_days": 1,
+          "depends_on": ["T-027"],
+          "assignee_persona": "Fullstack Dev",
+          "risk": "medium"
+        },
+        {
+          "id": "T-029",
+          "title": "Documentação — README, quickstart, API reference, CHANGELOG",
+          "description": "README.md: install (cargo install ensi ou binary download), quickstart (5 steps da criação de workspace ao primeiro artifact), pré-requisitos (GEMINI_API_KEY, sem serviços externos). API reference: endpoints com exemplos curl. CHANGELOG v1.0. CLAUDE.md por crate para onboarding de dev agents. Referência aos ADRs.",
+          "crate": "workspace",
+          "estimate_days": 2,
+          "depends_on": ["T-028"],
+          "assignee_persona": "Fullstack Dev",
+          "risk": "low"
+        },
+        {
+          "id": "T-030",
+          "title": "GitHub Release v1.0",
+          "description": "Tag v1.0 no repositório. GitHub Release com binários para macOS aarch64, macOS x86_64, Linux x86_64. Release notes do CHANGELOG. Smoke test final contra environment limpo. Anunciar para workspace Multica.",
+          "crate": "workspace",
+          "estimate_days": 1,
+          "depends_on": ["T-029"],
+          "assignee_persona": "Fullstack Dev",
+          "risk": "low"
+        }
+      ]
+    }
+  ],
+  "milestones": [
+    {
+      "week": 2,
+      "name": "Foundation complete",
+      "gate": "Cargo workspace compila (cargo check sem erros), SurrealDB embedded up com schema SCHEMAFULL, NATS JetStream embedded up, auth middleware (JWT/PAT/DaemonToken) funcional, OI-001 resolvido (métricas Gemini reais documentadas)"
+    },
+    {
+      "week": 4,
+      "name": "Core complete",
+      "gate": "Todos os endpoints REST funcional (workspaces, projects, issues, comments, agents, auth), ensi-db adapters completos com testes, daemon recebe task via NATS e cria execenv, Leptos app faz login e exibe issues"
+    },
+    {
+      "week": 6,
+      "name": "Pipeline complete",
+      "gate": "FSM roda pipeline completo Discovery→Planning→Architecture→Development→Review com Gemini real, artifacts validados por schema, WebSocket broadcast funcional, Pipeline View e Task Feed visíveis no browser, CLI ensi operacional"
+    },
+    {
+      "week": 8,
+      "name": "Ship",
+      "gate": "Single binary macOS+Linux, docs completos, security audit aprovado, release build < 3s startup, GitHub Release v1.0 publicado"
+    }
+  ],
+  "risks": [
+    {
+      "risk": "Gemini API latency real excede estimativas — p95 > 5min para Analyst ou > 20min para pipeline completo",
+      "probability": "medium",
+      "impact": "high",
+      "mitigation": "OI-001 validação no final da Week 2 (T-008). Se NFR violado: simplificar schema de artifacts para reduzir tokens de output, ou fallback gemini-2.0-flash para Planning/Architecture como último recurso."
+    },
+    {
+      "risk": "SurrealDB 3.0 embedded instabilidade — crash ou corrupção de dados em queries complexas",
+      "probability": "low",
+      "impact": "high",
+      "mitigation": "SCHEMAFULL mode para detectar violações cedo (T-004). DB health check no boot do server. Se instabilidade confirmada na Week 3: avaliar downgrade para SurrealDB 2.x ou pivot para SQLite + serde_json para artifact blobs."
+    },
+    {
+      "risk": "Leptos reactive model causa slip de schedule — dev novo ao modelo reactivo do Leptos",
+      "probability": "medium",
+      "impact": "medium",
+      "mitigation": "3-4 dias de onboarding no início da Week 4 (incluídos na estimativa T-015). Começar com componentes Leptos estáticos antes de adicionar reatividade. LOC ~30% maior que Next.js equivalente — budget de estimativas ajustado."
+    },
+    {
+      "risk": "NATS JetStream embedded sem precedente em produção na stack Rust — API instável ou behavior inesperado",
+      "probability": "low",
+      "impact": "medium",
+      "mitigation": "Implementação isolada em ensi-events (T-005) com testes de integração na Week 2. Se API unstable: fallback para polling SurrealDB em vez de NATS pub/sub — impacta só ensi-daemon e ensi-server."
+    },
+    {
+      "risk": "Gemini structured output falha schema validation > 15% das chamadas — success rate < 85%",
+      "probability": "low",
+      "impact": "medium",
+      "mitigation": "ADR-003: retry loop com error injection (3 tentativas). Schema preprocessing (strip additionalProperties/$ref/oneOf/anyOf) reduz falhas. Se taxa persistir alta: simplificar schemas de artifact removendo constraints complexos."
+    }
+  ]
+}

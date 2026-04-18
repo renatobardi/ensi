@@ -1,0 +1,7 @@
+[package]
+name = "ensi-frontend"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+ensi-core = { path = "../ensi-core" }

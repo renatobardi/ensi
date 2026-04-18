@@ -1,0 +1,16 @@
+# Rust
+target/
+Cargo.lock
+
+# BMad spikes build artifacts
+_bmad/spikes/*/target/
+
+# Env
+.env
+.env.local
+
+# OS
+.DS_Store
+
+# Agent context (gerado pelo Multica)
+.agent_context/

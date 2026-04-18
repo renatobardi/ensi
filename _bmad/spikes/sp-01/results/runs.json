@@ -1,0 +1,564 @@
+{
+  "brief_artifact": {
+    "compliance_rate": 1.0,
+    "compliant": 10,
+    "p50_latency_ms": 7164,
+    "p95_latency_ms": 9658,
+    "total_runs": 10
+  },
+  "flash_model": "gemini-2.5-flash",
+  "prd_artifact": {
+    "compliance_rate": 0.0,
+    "compliant": 0,
+    "p50_latency_ms": 31690,
+    "p95_latency_ms": 32023,
+    "total_runs": 5
+  },
+  "pro_model": "gemini-2.5-pro",
+  "runs": [
+    {
+      "compliance": true,
+      "input_tokens": 131,
+      "latency_ms": 6422,
+      "output_tokens": 491,
+      "raw_response": {
+        "constraints": [
+          "The backend must be built using Rust.",
+          "All LLM interactions must utilize the Gemini API.",
+          "Artifact generation agents must operate asynchronously.",
+          "Each generated artifact must strictly adhere to a predefined JSON schema for validation.",
+          "The MVP must focus on the core pipeline functionality and a limited set of output code types."
+        ],
+        "goals": [
+          "Automate the end-to-end generation of product development artifacts from brief to deployed code.",
+          "Ensure strict JSON schema validation for each generated artifact (Brief, PRD, Architecture, Stories, Code).",
+          "Successfully orchestrate LLM agents via a robust Finite State Machine (Pipeline FSM) to guide the development process.",
+          "Reduce the manual effort and time required to translate a product idea into deployable code.",
+          "Improve the consistency and quality of generated development artifacts across projects."
+        ],
+        "non_goals": [
+          "Completely replace human product managers, architects, or engineers; Ensi is a tool to augment their capabilities.",
+          "Handle complex human-in-the-loop decision-making beyond explicit validation steps in the MVP.",
+          "Support an exhaustive list of programming languages or frameworks beyond a core set for the MVP.",
+          "Provide full-fledged CI/CD capabilities beyond initial code deployment.",
+          "Offer advanced project management features like task assignment or resource allocation."
+        ],
+        "problem_statement": "The current product development lifecycle is often characterized by manual, time-consuming, and error-prone processes for generating critical artifacts like product briefs, PRDs, architecture designs, user stories, and initial code. This leads to inconsistencies, delays, and increased overhead, hindering rapid iteration and time-to-market for new features and products.",
+        "success_metrics": [
+          "Successful completion of the full pipeline (Brief to Code) for 80% of input briefs.",
+          "95% of generated artifacts pass their respective JSON schema validations on the first attempt.",
+          "Achieve a 40% reduction in the average time taken from initial brief creation to deployable code for simple features, compared to manual processes.",
+          "Pilot user feedback indicates a significant improvement in artifact consistency and development efficiency.",
+          "The pipeline demonstrates high stability with less than 5% critical failure rate during artifact generation."
+        ],
+        "target_audience": "Software development teams, product managers, engineering managers, and technical leads in startups and enterprises seeking to accelerate their product development cycles and improve artifact consistency.",
+        "timeline_weeks": 10,
+        "title": "Ensi: AI-Powered Product Development Pipeline MVP"
+      },
+      "retry_attempt": 0,
+      "run_id": 1,
+      "schema_name": "BriefArtifact",
+      "status": "success",
+      "validation_error": null
+    },
+    {
+      "compliance": true,
+      "input_tokens": 131,
+      "latency_ms": 6447,
+      "output_tokens": 644,
+      "raw_response": {
+        "constraints": [
+          "The backend must be implemented in Rust.",
+          "LLM agent interactions must utilize the Gemini API.",
+          "All generated artifacts must be validated against strict JSON schemas.",
+          "The system must operate with async agents for efficient processing.",
+          "Initial scope is limited to a single, well-defined product feature for end-to-end demonstration.",
+          "Development timeline is constrained to the specified weeks for MVP delivery."
+        ],
+        "goals": [
+          "Develop an MVP of the Ensi pipeline capable of generating structured artifacts from a product brief to deployable code.",
+          "Successfully orchestrate LLM agents via a Rust-based Finite State Machine (Pipeline FSM) to produce Brief, PRD, Architecture, Stories, and Code artifacts.",
+          "Ensure all generated artifacts strictly adhere to predefined JSON schemas at each stage of the pipeline.",
+          "Demonstrate an end-to-end successful run of the pipeline for a simple, well-defined product feature.",
+          "Establish a robust and extensible foundation for future iterations and feature enhancements."
+        ],
+        "non_goals": [
+          "Automating the actual deployment of generated code to production environments.",
+          "Replacing human product managers, architects, or engineers entirely; Ensi is a tool to augment their capabilities.",
+          "Supporting an exhaustive list of programming languages, frameworks, or cloud providers beyond an initial focus.",
+          "Complex CI/CD pipeline integration beyond the generation of code artifacts.",
+          "Real-time, interactive artifact editing within the Ensi platform (MVP focuses on generation and validation)."
+        ],
+        "problem_statement": "The current product development process is often slow, inconsistent, and resource-intensive, requiring significant manual effort to create and maintain various artifacts like briefs, PRDs, architecture designs, user stories, and code. This leads to delays, communication gaps, and increased time-to-market for new features and products. There's a need for an automated, intelligent system to streamline this pipeline, ensuring consistency and accelerating delivery.",
+        "success_metrics": [
+          "Successful end-to-end generation of all artifacts (Brief to Code) for a pilot feature, passing all schema validations.",
+          "Reduction in the manual effort required to produce a complete set of development artifacts by at least 50% for the pilot feature.",
+          "All generated artifacts (Brief, PRD, Architecture, Stories, Code) pass their respective JSON schema validations 100% of the time.",
+          "Positive feedback from pilot users regarding the quality and coherence of the generated artifacts.",
+          "The Pipeline FSM successfully transitions through all states without critical errors during end-to-end runs."
+        ],
+        "target_audience": "Software development teams, product managers, engineering leads, and organizations seeking to accelerate their product development lifecycle, improve artifact quality, and reduce manual overhead.",
+        "timeline_weeks": 10,
+        "title": "Ensi: AI-Powered Product Development Pipeline MVP"
+      },
+      "retry_attempt": 0,
+      "run_id": 2,
+      "schema_name": "BriefArtifact",
+      "status": "success",
+      "validation_error": null
+    },
+    {
+      "compliance": true,
+      "input_tokens": 131,
+      "latency_ms": 6280,
+      "output_tokens": 612,
+      "raw_response": {
+        "constraints": [
+          "The core pipeline logic must be implemented in Rust.",
+          "All LLM agent interactions for artifact generation must utilize the Gemini API.",
+          "Each generated artifact must strictly adhere to its predefined JSON schema.",
+          "The MVP will focus on a single, well-defined use case or feature to demonstrate the pipeline's capabilities.",
+          "Limited budget and team resources typical for an MVP phase."
+        ],
+        "goals": [
+          "Automate the end-to-end generation of product development artifacts (Brief, PRD, Architecture, Stories, Code) using LLM agents.",
+          "Implement a robust Pipeline FSM in Rust to orchestrate LLM agents and manage the artifact generation flow.",
+          "Ensure strict JSON schema validation for each generated artifact to maintain quality and consistency.",
+          "Successfully demonstrate the pipeline's ability to produce deployable code for a simple, well-defined feature from an initial brief.",
+          "Reduce the manual effort and time required to move from a product idea to a ready-to-deploy codebase for a defined scope."
+        ],
+        "non_goals": [
+          "Achieve human-level code quality or optimize for complex, highly performant systems in the MVP.",
+          "Support an exhaustive list of programming languages, frameworks, or deployment environments beyond the initial chosen stack.",
+          "Replace human product managers, architects, or engineers entirely; the goal is augmentation and acceleration.",
+          "Handle highly ambiguous or ill-defined initial product briefs without any human intervention or refinement.",
+          "Provide a full-fledged CI/CD solution; the focus is on artifact generation and code output."
+        ],
+        "problem_statement": "The current product development process is often slow, inconsistent, and resource-intensive, requiring significant manual effort to translate initial ideas into deployable code. This leads to delays, miscommunications, and quality issues across various stages, from brief creation to architecture design, story writing, and code implementation. Teams struggle with maintaining artifact consistency and ensuring alignment throughout the pipeline.",
+        "success_metrics": [
+          "Successful generation of all five artifacts (Brief, PRD, Architecture, Stories, Code) for a sample project.",
+          "All generated artifacts pass their respective JSON schema validations without errors.",
+          "The generated code for the sample project is deployable and functional.",
+          "Reduction in manual effort for artifact creation by at least 50% for the defined scope.",
+          "Positive feedback from internal pilot users regarding the pipeline's efficiency and artifact quality."
+        ],
+        "target_audience": "Software development teams, product managers, engineering managers, and tech leads in startups and enterprises seeking to accelerate their product development cycles and improve artifact quality and consistency.",
+        "timeline_weeks": 10,
+        "title": "Ensi: AI-Powered Product Development Pipeline MVP"
+      },
+      "retry_attempt": 0,
+      "run_id": 3,
+      "schema_name": "BriefArtifact",
+      "status": "success",
+      "validation_error": null
+    },
+    {
+      "compliance": true,
+      "input_tokens": 131,
+      "latency_ms": 7291,
+      "output_tokens": 641,
+      "raw_response": {
+        "constraints": [
+          "The core pipeline must be built in Rust for performance and reliability.",
+          "All LLM agent interactions must utilize the Google Gemini API.",
+          "Each generated artifact must strictly adhere to its predefined JSON schema for validation.",
+          "The MVP will focus on generating code for a single, well-defined, and relatively simple product feature.",
+          "Limited budget and team size necessitate a focused scope for the MVP."
+        ],
+        "goals": [
+          "Automate the generation of core product development artifacts (Brief, PRD, Architecture, Stories, Code) using LLM agents.",
+          "Ensure strict schema validation for each generated artifact to maintain consistency and quality.",
+          "Successfully demonstrate an end-to-end pipeline run from initial brief to deployable code for a simple feature.",
+          "Reduce the manual effort and time required to produce development-ready artifacts.",
+          "Establish a robust and extensible Rust-based Pipeline FSM for orchestrating LLM agents."
+        ],
+        "non_goals": [
+          "Full-fledged CI/CD integration beyond code generation (e.g., automated deployment to production environments).",
+          "Support for all possible programming languages, frameworks, or cloud providers (MVP will focus on a specific, limited stack).",
+          "Advanced human-in-the-loop intervention mechanisms beyond initial brief input and final review.",
+          "Complex project management features or integrations with existing PM tools.",
+          "Real-time collaborative editing of generated artifacts within the Ensi platform."
+        ],
+        "problem_statement": "Product development often involves manual, time-consuming, and error-prone processes for generating critical artifacts like product briefs, PRDs, architecture designs, user stories, and code. This leads to significant delays, inconsistencies, and increased costs, especially in fast-paced development environments. Current tools lack end-to-end automation and intelligent validation across the entire pipeline, hindering rapid iteration and deployment.",
+        "success_metrics": [
+          "Successful generation of all five artifacts (Brief, PRD, Architecture, Stories, Code) for a sample project with 100% schema validation pass rate.",
+          "Reduction in manual effort for artifact creation by at least 70% compared to traditional methods (as measured by pilot user feedback).",
+          "Average time taken from brief input to deployable code generation for a simple feature is less than 24 hours.",
+          "Positive feedback from at least 3 pilot users regarding the quality and utility of the generated artifacts.",
+          "The Pipeline FSM successfully orchestrates agents through all states without critical failures during testing."
+        ],
+        "target_audience": "Product Managers, Engineering Leads, Software Developers, and CTOs in startups and small to medium-sized enterprises (SMEs) looking to accelerate their product development cycles, improve artifact quality, and reduce manual overhead.",
+        "timeline_weeks": 12,
+        "title": "Ensi: AI-Powered Product Development Pipeline MVP"
+      },
+      "retry_attempt": 0,
+      "run_id": 4,
+      "schema_name": "BriefArtifact",
+      "status": "success",
+      "validation_error": null
+    },
+    {
+      "compliance": true,
+      "input_tokens": 131,
+      "latency_ms": 9658,
+      "output_tokens": 662,
+      "raw_response": {
+        "constraints": [
+          "Primary reliance on Google Gemini API for all LLM agent interactions and content generation.",
+          "Core pipeline logic and FSM implementation must be developed in Rust for performance and reliability.",
+          "All generated artifacts must pass strict JSON schema validation before advancing to the next pipeline stage.",
+          "MVP scope limited to generating code for a specific, simple application type (e.g., a basic CRUD API in Python/FastAPI or a simple static web component).",
+          "Limited initial budget and a small core development team for the MVP phase."
+        ],
+        "goals": [
+          "Automate the end-to-end generation of product development artifacts (Brief, PRD, Architecture, Stories, Code) using LLM agents.",
+          "Orchestrate artifact generation and validation through a robust Finite State Machine (Pipeline FSM).",
+          "Ensure all generated artifacts strictly conform to predefined JSON schemas, enabling automated validation.",
+          "Reduce the average time from initial product brief to deployable code for simple features by at least 30%.",
+          "Demonstrate the technical viability and efficiency of the AI-powered pipeline for a defined scope in the MVP."
+        ],
+        "non_goals": [
+          "Achieve human-level strategic product planning or complex decision-making.",
+          "Replace the need for human oversight and final approval of generated artifacts.",
+          "Support an exhaustive list of programming languages, frameworks, or deployment environments beyond the MVP's defined scope.",
+          "Integrate with complex enterprise-level CI/CD systems in the initial MVP.",
+          "Provide a fully customizable LLM agent behavior beyond initial prompt engineering."
+        ],
+        "problem_statement": "The current product development lifecycle is often characterized by manual, time-consuming, and error-prone processes for generating critical artifacts such as product requirements documents, architectural designs, and user stories. This leads to significant delays, inconsistencies, and increased costs, especially when scaling development efforts. Teams struggle with maintaining alignment across different stages and ensuring that all documentation adheres to predefined standards, hindering rapid iteration and deployment.",
+        "success_metrics": [
+          "Successfully complete at least one full end-to-end pipeline run (Brief to Code) for a simple feature without manual intervention beyond initial brief input.",
+          "Achieve an average artifact schema validation success rate of 85% on the first attempt across all pipeline stages.",
+          "Demonstrate a measurable reduction (e.g., 30%) in the time taken to produce deployable code for a defined simple feature compared to manual processes.",
+          "Receive positive feedback from pilot users regarding the clarity, completeness, and utility of generated artifacts.",
+          "Maintain pipeline stability with an uptime of 99% during pilot testing."
+        ],
+        "target_audience": "Software development teams, product managers, engineering leads, and CTOs in startups and enterprises seeking to accelerate their product development cycles, improve artifact consistency, and reduce manual overhead.",
+        "timeline_weeks": 12,
+        "title": "Ensi: AI-Powered Product Development Pipeline MVP"
+      },
+      "retry_attempt": 0,
+      "run_id": 5,
+      "schema_name": "BriefArtifact",
+      "status": "success",
+      "validation_error": null
+    },
+    {
+      "compliance": true,
+      "input_tokens": 131,
+      "latency_ms": 6547,
+      "output_tokens": 640,
+      "raw_response": {
+        "constraints": [
+          "The core pipeline logic must be implemented in Rust.",
+          "LLM agent interactions for artifact generation must utilize the Gemini API.",
+          "All intermediate and final artifacts must be validated against strict JSON schemas before pipeline progression.",
+          "The MVP will focus on a specific, limited set of code generation targets (e.g., a simple web service or component).",
+          "The system must operate asynchronously to manage concurrent LLM calls and processing."
+        ],
+        "goals": [
+          "Successfully automate the generation of structured product development artifacts (Brief, PRD, Architecture, Stories, Code) using LLM agents.",
+          "Ensure all generated artifacts strictly adhere to predefined JSON schemas, validating their structure and content.",
+          "Establish a robust and extensible Pipeline FSM (Finite State Machine) in Rust to orchestrate LLM agents and manage the artifact generation flow.",
+          "Demonstrate the end-to-end capability of transforming a high-level product brief into deployable code for a defined scope.",
+          "Reduce the manual effort and time required to move from product concept to initial code implementation."
+        ],
+        "non_goals": [
+          "Achieve 100% human-level code quality or complexity without any human review or intervention in the MVP.",
+          "Support an exhaustive list of programming languages, frameworks, or deployment environments beyond the initial MVP scope.",
+          "Replace human product managers, architects, or developers entirely; the goal is augmentation and acceleration.",
+          "Handle highly specialized or niche domain knowledge without specific fine-tuning or extensive context provision.",
+          "Provide a full-fledged CI/CD pipeline beyond the initial code generation and basic deployment demonstration."
+        ],
+        "problem_statement": "The current product development process is often manual, time-consuming, and prone to inconsistencies, leading to delays in bringing products and features to market. Generating structured artifacts like PRDs, architecture designs, and user stories, and then translating them into production-ready code, requires significant human effort and coordination, often resulting in bottlenecks and misalignments.",
+        "success_metrics": [
+          "Successful generation of all five artifact types (Brief, PRD, Architecture, Stories, Code) for at least 3 distinct product briefs.",
+          "100% of generated artifacts pass their respective JSON schema validations.",
+          "Reduction in the average time from initial brief input to deployable code output by at least 50% compared to manual processes for the MVP scope.",
+          "Positive feedback from pilot users regarding the clarity, completeness, and utility of the generated artifacts.",
+          "Successful compilation and execution of the generated code in a designated test environment."
+        ],
+        "target_audience": "Software development teams, product managers, engineering managers, and startups seeking to accelerate their product development lifecycle and improve the consistency and quality of their development artifacts.",
+        "timeline_weeks": 10,
+        "title": "Ensi: AI-Powered Product Development Pipeline MVP"
+      },
+      "retry_attempt": 0,
+      "run_id": 6,
+      "schema_name": "BriefArtifact",
+      "status": "success",
+      "validation_error": null
+    },
+    {
+      "compliance": true,
+      "input_tokens": 131,
+      "latency_ms": 8458,
+      "output_tokens": 622,
+      "raw_response": {
+        "constraints": [
+          "The backend must be implemented in Rust.",
+          "All LLM calls for artifact generation must utilize the Gemini API.",
+          "Each generated artifact must strictly adhere to its predefined JSON schema for validation.",
+          "The pipeline must follow a linear progression: Brief → PRD → Architecture → Stories → Code.",
+          "The MVP scope will focus on generating artifacts for a single, well-defined product feature or microservice."
+        ],
+        "goals": [
+          "Automate the generation of product development artifacts (Brief, PRD, Architecture, Stories, Code) using LLM agents.",
+          "Ensure strict JSON schema validation for each generated artifact before pipeline progression.",
+          "Demonstrate a functional end-to-end pipeline from a high-level brief to deployable code.",
+          "Reduce the time and manual effort required to produce structured development artifacts.",
+          "Establish a robust and extensible finite state machine (Pipeline FSM) for orchestrating LLM agents."
+        ],
+        "non_goals": [
+          "Developing a comprehensive CI/CD system beyond the final code deployment step.",
+          "Supporting multiple LLM providers beyond the initial Gemini API integration for the MVP.",
+          "Building an elaborate graphical user interface (GUI) for pipeline visualization; the MVP will be primarily CLI-driven.",
+          "Implementing advanced human-in-the-loop editing features within the pipeline for artifact modification (focus on autonomous generation and validation).",
+          "Full-stack application development for the generated code; focus is on backend code generation for a simple service."
+        ],
+        "problem_statement": "Product development often involves a lengthy, manual, and error-prone process of translating high-level briefs into detailed specifications, architecture, user stories, and finally, code. This leads to significant delays, inconsistencies, and increased costs, especially in fast-paced environments where rapid iteration is crucial. Existing tools lack the intelligence to autonomously generate and validate these artifacts, requiring constant human intervention and oversight.",
+        "success_metrics": [
+          "Successful end-to-end execution of the pipeline (Brief to Code) for at least three distinct input briefs.",
+          "All generated artifacts (PRD, Architecture, Stories, Code) pass their respective JSON schema validations 100% of the time.",
+          "The generated code successfully compiles and passes basic unit tests in a test environment.",
+          "Average time taken from brief input to deployable code output is less than X hours (to be defined post-initial testing).",
+          "Positive feedback from internal stakeholders on the quality and consistency of generated artifacts."
+        ],
+        "target_audience": "Software development teams, product managers, engineering managers, and startups looking to accelerate their product development lifecycle and reduce manual overhead in artifact generation.",
+        "timeline_weeks": 12,
+        "title": "Ensi: AI-Powered Product Development Pipeline MVP"
+      },
+      "retry_attempt": 0,
+      "run_id": 7,
+      "schema_name": "BriefArtifact",
+      "status": "success",
+      "validation_error": null
+    },
+    {
+      "compliance": true,
+      "input_tokens": 131,
+      "latency_ms": 5946,
+      "output_tokens": 576,
+      "raw_response": {
+        "constraints": [
+          "The backend must be built using Rust.",
+          "All LLM interactions must utilize the Gemini API.",
+          "Artifact generation agents must be asynchronous.",
+          "Each generated artifact must strictly adhere to its predefined JSON schema.",
+          "The MVP will focus on a single, well-defined product development flow (Brief to Code)."
+        ],
+        "goals": [
+          "Automate the generation of structured product development artifacts (Brief, PRD, Architecture, Stories, Code) using LLM agents.",
+          "Implement a robust Pipeline Finite State Machine (FSM) to orchestrate the progression of artifact generation.",
+          "Ensure strict JSON schema validation for each generated artifact before advancing to the next stage.",
+          "Successfully generate deployable code from a high-level product brief for a simple feature.",
+          "Reduce the manual effort and time required to move from product concept to development-ready specifications."
+        ],
+        "non_goals": [
+          "Automating the deployment of generated code to production environments.",
+          "Replacing human product managers, architects, or engineers entirely; Ensi is a tool to augment their capabilities.",
+          "Supporting multiple LLM providers beyond Gemini for the MVP.",
+          "Providing a full-fledged CI/CD pipeline beyond code generation.",
+          "Automating user acceptance testing or end-to-end testing."
+        ],
+        "problem_statement": "The current product development process is often slow, inconsistent, and prone to manual errors, leading to significant delays from initial concept to deployed code. Teams struggle with maintaining consistent documentation, translating high-level briefs into detailed technical specifications, and ensuring alignment across product, design, and engineering. This results in increased time-to-market, higher development costs, and reduced agility.",
+        "success_metrics": [
+          "Successful end-to-end pipeline execution (Brief to Code) for at least one simple feature within the MVP timeframe.",
+          "90% of generated artifacts pass their respective JSON schema validation on the first attempt.",
+          "Reduction of 50% in the average time taken to produce development-ready stories from an initial brief, as measured in pilot projects.",
+          "Positive feedback from pilot users regarding the quality, consistency, and usefulness of generated artifacts.",
+          "Pipeline stability with an error rate below 5% during artifact generation."
+        ],
+        "target_audience": "Software development teams, product managers, engineering managers, and technical leads in startups and enterprises seeking to accelerate their product development lifecycle, improve artifact consistency, and reduce manual overhead.",
+        "timeline_weeks": 10,
+        "title": "Ensi: AI-Powered Product Development Pipeline MVP"
+      },
+      "retry_attempt": 0,
+      "run_id": 8,
+      "schema_name": "BriefArtifact",
+      "status": "success",
+      "validation_error": null
+    },
+    {
+      "compliance": true,
+      "input_tokens": 131,
+      "latency_ms": 7500,
+      "output_tokens": 599,
+      "raw_response": {
+        "constraints": [
+          "The pipeline orchestration must be built using Rust.",
+          "All LLM agent interactions for artifact generation must utilize the Gemini API.",
+          "Every generated artifact must strictly adhere to its defined JSON schema for validation.",
+          "The MVP will focus on a limited scope of artifact types: Brief, PRD, Architecture, Stories, and Code.",
+          "Initial development will be constrained by a small team and limited budget."
+        ],
+        "goals": [
+          "Automate the generation of structured product development artifacts (Brief, PRD, Architecture, Stories, Code) using LLM agents.",
+          "Orchestrate the artifact generation process via a robust Finite State Machine (Pipeline FSM) in Rust.",
+          "Ensure strict validation of all generated artifacts against predefined JSON schemas to maintain quality and consistency.",
+          "Demonstrate a functional end-to-end pipeline from an initial product brief to deployable code for a simple feature.",
+          "Reduce the manual effort and time required to transition between product development stages."
+        ],
+        "non_goals": [
+          "Achieve 100% autonomous, production-ready code deployment without any human review or intervention.",
+          "Support an exhaustive list of programming languages, frameworks, or deployment environments beyond a core set for the MVP.",
+          "Replace human product managers, architects, or developers entirely; the goal is augmentation and acceleration.",
+          "Integrate with every possible CI/CD system or project management tool in the MVP phase."
+        ],
+        "problem_statement": "The current product development lifecycle is often characterized by manual, time-consuming, and error-prone handoffs between different stages (brief, PRD, architecture, stories, code). This leads to inconsistencies, delays, and increased costs, hindering rapid innovation and deployment. Teams struggle to maintain alignment and ensure high-quality, structured outputs across the entire pipeline.",
+        "success_metrics": [
+          "Successful generation of all five core artifacts (Brief to Code) for at least three distinct product briefs.",
+          "All generated artifacts pass their respective JSON schema validations with 100% accuracy.",
+          "Reduction in the average time taken from initial brief input to generated, deployable code by at least 50% compared to manual processes for a simple feature.",
+          "Positive feedback from pilot users regarding the quality, consistency, and utility of the generated artifacts.",
+          "Successful compilation and execution of the generated code in a designated test environment."
+        ],
+        "target_audience": "Software development teams, product managers, engineering managers, and startups seeking to accelerate their product development cycles and improve the consistency and quality of their development artifacts.",
+        "timeline_weeks": 10,
+        "title": "Ensi: AI-Powered Product Development Pipeline MVP"
+      },
+      "retry_attempt": 0,
+      "run_id": 9,
+      "schema_name": "BriefArtifact",
+      "status": "success",
+      "validation_error": null
+    },
+    {
+      "compliance": true,
+      "input_tokens": 131,
+      "latency_ms": 7164,
+      "output_tokens": 618,
+      "raw_response": {
+        "constraints": [
+          "The pipeline FSM must be implemented in Rust.",
+          "All LLM agent interactions must utilize the Gemini API.",
+          "Artifacts must strictly adhere to predefined JSON schemas for validation.",
+          "MVP scope is limited to generating artifacts for a single, well-defined type of application (e.g., a simple web service or API).",
+          "Budget constraints for LLM API calls must be considered during development and testing."
+        ],
+        "goals": [
+          "Automate the generation of product development artifacts (Brief, PRD, Architecture, Stories, Code) using LLM agents.",
+          "Implement a robust Pipeline FSM in Rust to orchestrate LLM agents and manage artifact flow.",
+          "Ensure strict JSON schema validation for each generated artifact before pipeline progression.",
+          "Successfully demonstrate an end-to-end pipeline run from a product brief to deployable code for a simple application.",
+          "Reduce the manual effort and time required to produce foundational product development documentation and initial code."
+        ],
+        "non_goals": [
+          "Developing a full-fledged CI/CD system beyond code generation and basic testing.",
+          "Supporting an exhaustive list of programming languages or frameworks (focus on a core set for MVP).",
+          "Implementing advanced human-in-the-loop collaboration features beyond initial brief input and final code review.",
+          "Integrating with external project management or version control systems beyond basic Git operations.",
+          "Providing a sophisticated UI for pipeline configuration or monitoring in the MVP."
+        ],
+        "problem_statement": "Product development often involves manual, time-consuming, and error-prone processes for generating critical artifacts like product briefs, PRDs, architecture designs, user stories, and code. This leads to significant delays, inconsistencies, and increased costs, especially for early-stage product teams and startups. The current methods lack a cohesive, automated flow, requiring constant human intervention and validation at each stage, hindering rapid iteration and deployment.",
+        "success_metrics": [
+          "Successful completion of the full pipeline (Brief to Code) for at least three distinct, simple product briefs.",
+          "Generated code passes basic unit tests and integration tests for the target application.",
+          "Average time taken from Brief input to deployable code generation is reduced by at least 50% compared to manual processes.",
+          "All generated artifacts (PRD, Architecture, Stories) are validated against their respective JSON schemas with 100% compliance.",
+          "Positive feedback from pilot users regarding the quality and coherence of generated artifacts."
+        ],
+        "target_audience": "Small to medium-sized product teams, startups, and individual developers seeking to accelerate their product development lifecycle, reduce manual overhead, and improve consistency in artifact generation.",
+        "timeline_weeks": 10,
+        "title": "Ensi: AI-Powered Product Development Pipeline MVP"
+      },
+      "retry_attempt": 0,
+      "run_id": 10,
+      "schema_name": "BriefArtifact",
+      "status": "success",
+      "validation_error": null
+    },
+    {
+      "compliance": false,
+      "input_tokens": 223,
+      "latency_ms": 31690,
+      "output_tokens": 2672,
+      "raw_response": null,
+      "retry_attempt": 0,
+      "run_id": 1,
+      "schema_name": "PrdArtifact",
+      "status": "parse_error",
+      "validation_error": "Invalid JSON: EOF while parsing a list at line 192 column 8"
+    },
+    {
+      "compliance": false,
+      "input_tokens": 223,
+      "latency_ms": 30870,
+      "output_tokens": 2325,
+      "raw_response": null,
+      "retry_attempt": 0,
+      "run_id": 2,
+      "schema_name": "PrdArtifact",
+      "status": "parse_error",
+      "validation_error": "Invalid JSON: EOF while parsing a string at line 166 column 10"
+    },
+    {
+      "compliance": false,
+      "input_tokens": 223,
+      "latency_ms": 31649,
+      "output_tokens": 2127,
+      "raw_response": null,
+      "retry_attempt": 0,
+      "run_id": 3,
+      "schema_name": "PrdArtifact",
+      "status": "parse_error",
+      "validation_error": "Invalid JSON: EOF while parsing a string at line 153 column 37"
+    },
+    {
+      "compliance": false,
+      "input_tokens": 223,
+      "latency_ms": 31921,
+      "output_tokens": 2204,
+      "raw_response": null,
+      "retry_attempt": 0,
+      "run_id": 4,
+      "schema_name": "PrdArtifact",
+      "status": "parse_error",
+      "validation_error": "Invalid JSON: EOF while parsing a string at line 166 column 53"
+    },
+    {
+      "compliance": false,
+      "input_tokens": 223,
+      "latency_ms": 32023,
+      "output_tokens": 2393,
+      "raw_response": null,
+      "retry_attempt": 0,
+      "run_id": 5,
+      "schema_name": "PrdArtifact",
+      "status": "parse_error",
+      "validation_error": "Invalid JSON: EOF while parsing a value at line 197 column 6"
+    },
+    {
+      "compliance": true,
+      "input_tokens": 20,
+      "latency_ms": 2232,
+      "output_tokens": 86,
+      "raw_response": {
+        "constraints": [
+          "Constraint 1 placeholder",
+          "Constraint 2 placeholder"
+        ],
+        "goals": [
+          "Goal 1 placeholder",
+          "Goal 2 placeholder"
+        ],
+        "non_goals": [
+          "Non-goal 1 placeholder",
+          "Non-goal 2 placeholder"
+        ],
+        "problem_statement": "This is a placeholder problem statement.",
+        "success_metrics": [
+          "Metric 1 placeholder",
+          "Metric 2 placeholder"
+        ],
+        "target_audience": "General users",
+        "timeline_weeks": 4,
+        "title": "test"
+      },
+      "retry_attempt": 0,
+      "run_id": 99,
+      "schema_name": "BriefArtifact_retry_test",
+      "status": "success",
+      "validation_error": null
+    }
+  ],
+  "timestamp": "2026-04-18T03:24:07.692443+00:00"
+}
