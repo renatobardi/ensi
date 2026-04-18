@@ -4,7 +4,7 @@
 |-------|-------|--------|--------|
 | Analysis | Analyst | ✅ Complete | Architectural design comment on REN-52 |
 | Product Requirements | PM | ✅ Complete | `_bmad/docs/prd.md` |
-| Architecture | Architect | ⬜ Pending | `_bmad/docs/architecture.md` |
+| Architecture | Architect | ✅ Complete | `_bmad/docs/architecture.md` |
 | Implementation | Developer | ⬜ Pending | — |
 | QA / Review | QA | ⬜ Pending | — |
 
