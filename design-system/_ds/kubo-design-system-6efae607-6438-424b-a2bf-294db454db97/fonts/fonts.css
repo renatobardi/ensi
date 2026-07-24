@@ -1,0 +1,13 @@
+/* Kubo webfonts. Inter Variable is self-hosted (fonts/InterVariable.woff2) — fully offline.
+   local('Inter') is a fallback for users who already have it installed. Noto Sans JP
+   (kanji nods) still comes from Google Fonts; remove the @import if you self-host it too. */
+
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@500;600;700&display=swap');
+
+@font-face {
+  font-family: 'Inter Variable';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('./InterVariable.woff2') format('woff2-variations'), local('Inter');
+}

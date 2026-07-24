@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<!-- @template name="Kubo Dashboard" description="Kubo app shell — 256px sidebar, 72px header, page header and dashboard cards" -->
+<helmet>
+<script src="./ds-base.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+  html, body { margin: 0; height: 100%; }
+  body { background: var(--background); font-family: var(--font-sans); color: var(--foreground); }
+</style>
+</helmet>
+<div style="display:flex; height:100vh; background:var(--background)">
+
+  <x-import component-from-global-scope="KoboDesignSystem_6efae6.Sidebar" active="Painel" hint-size="256px,100%"></x-import>
+
+  <div style="flex:1; min-width:0; display:flex; flex-direction:column">
+    <!-- 72px header -->
+    <header style="display:flex; align-items:center; gap:8px; height:72px; flex-shrink:0; padding:0 16px; border-bottom:1px solid color-mix(in oklab, var(--border) 50%, transparent)">
+      <div style="width:1px; height:16px; background:color-mix(in oklab, var(--border) 60%, transparent)"></div>
+      <span style="font-size:14px; font-weight:500; color:var(--foreground)">Painel</span>
+    </header>
+
+    <!-- content -->
+    <main style="flex:1; min-height:0; overflow-y:auto; padding:24px; display:flex; flex-direction:column; gap:24px">
+      <!-- page header -->
+      <div>
+        <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:16px">
+          <div>
+            <h1 style="margin:0; font-family:var(--font-heading); font-size:20px; font-weight:600; letter-spacing:-0.025em">Painel</h1>
+            <p style="margin:4px 0 0; font-size:14px; color:var(--muted-foreground)">Seu ateliê de agentes — coleta, conhecimento e distribuição num relance.</p>
+          </div>
+          <x-import component-from-global-scope="KoboDesignSystem_6efae6.Button" icon="plus" hint-size="120px,36px">Novo fluxo</x-import>
+        </div>
+        <div style="margin-top:16px; height:1px; width:100%; background:var(--border)"></div>
+      </div>
+
+      <!-- stat tiles -->
+      <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:12px">
+        <x-import component-from-global-scope="KoboDesignSystem_6efae6.StatTile" label="Fontes ativas" value="9" icon="rss" hint-size="100%,68px"></x-import>
+        <x-import component-from-global-scope="KoboDesignSystem_6efae6.StatTile" label="Itens (7d)" value="214" icon="database" hint-size="100%,68px"></x-import>
+        <x-import component-from-global-scope="KoboDesignSystem_6efae6.StatTile" label="Destilados" value="68" icon="book-open" hint-size="100%,68px"></x-import>
+        <x-import component-from-global-scope="KoboDesignSystem_6efae6.StatTile" label="Entidades" value="137" icon="network" hint-size="100%,68px"></x-import>
+      </div>
+
+      <!-- a card to fill in -->
+      <div style="display:flex; flex-direction:column; gap:24px; padding:24px 0; background:var(--card); color:var(--card-foreground); border-radius:var(--radius-2xl); overflow:hidden; box-shadow:0 0 0 1px color-mix(in oklab, var(--foreground) 10%, transparent)">
+        <div style="padding:0 24px">
+          <h3 style="margin:0; font-family:var(--font-heading); font-size:16px; font-weight:500; letter-spacing:-0.025em">Fluxos ativos</h3>
+          <p style="margin:6px 0 0; font-size:12px; color:var(--muted-foreground)">Automações em andamento.</p>
+        </div>
+        <div style="padding:0 24px; font-size:14px; color:var(--muted-foreground)">Adicione linhas de execução, cards de fluxo ou um gráfico aqui.</div>
+      </div>
+    </main>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

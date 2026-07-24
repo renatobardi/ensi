@@ -1,0 +1,44 @@
+/* Kubo typography tokens.
+   Inter everywhere — body, UI, and headings (ChatGPT-clean).
+   The whole app runs at text-sm (14px). */
+
+:root {
+  --font-sans: 'Inter Variable', 'Inter', sans-serif;
+  --font-heading: 'Inter Variable', 'Inter', sans-serif;
+  --font-jp: 'Noto Sans JP', sans-serif;
+
+  /* Tailwind scale used by the app */
+  --text-2xs: 0.625rem;   /* 10px — token counts, fine meta */
+  --text-xs: 0.75rem;     /* 12px — descriptions, meta */
+  --text-sm: 0.875rem;    /* 14px — DEFAULT body/UI size */
+  --text-base: 1rem;      /* 16px — card/dialog titles */
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;     /* 20px — page h1 */
+  --text-2xl: 1.5rem;     /* 24px — brand/logo, stat numbers */
+
+  --leading-none: 1;
+  --leading-tight: 1.25;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.625;
+
+  --tracking-tight: -0.025em;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
+  margin: 0;
+}
+
+/* Signature heading treatment */
+h1, h2, h3, h4, .font-heading {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  letter-spacing: var(--tracking-tight);
+}
+
+button { cursor: pointer; }
+* { border-color: var(--border); box-sizing: border-box; }
